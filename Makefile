@@ -33,11 +33,9 @@ test: setup
 pre-commit: lint
 
 # Continuous Integration Test Runner
-ci:
-	make test
+ci: lint test
 
-release:
-	make ci
+release: ci
 	git push
 	grunt release$(RELEASEFLAGS)
 

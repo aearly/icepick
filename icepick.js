@@ -21,6 +21,7 @@ function arrayClone(arr) {
   var index = 0,
     length = arr.length,
     result = Array(length);
+
   for (; index < length; index += 1) {
     result[index] = arr[index];
   }

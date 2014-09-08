@@ -116,7 +116,7 @@ describe("icepick", function () {
           a: 1,
           b: {a: 2},
           c: [
-            {a: 3, b: 4 },
+            {a: 3, b: 4},
             {a: 4}
           ]
         });

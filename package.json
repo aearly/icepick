@@ -4,7 +4,7 @@
   "description": "Utilities for working with frozen objects",
   "main": "icepick.js",
   "scripts": {
-    "test": "make test"
+    "test": "make ci"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
     "grunt-release": "~0.7.0",
-    "jscs": "~1.6.1",
+    "jscs": "~1.5.9",
     "jshint": "~2.5.5",
     "mocha": "~1.21.4"
   },
