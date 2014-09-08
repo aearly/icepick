@@ -1,0 +1,27 @@
+{
+  "preset": "google",
+  "validateQuoteMarks": "\"",
+  "validateJSDoc": {
+    "requireParamTypes": false
+  },
+  "requireMultipleVarDecl": "onevar",
+  "disallowMultipleLineBreaks": null,
+  "requireLineFeedAtFileEnd": null,
+  "maximumLineLength": {
+    "value": 90,
+    "allowComments": false,
+    "allowRegex": true
+  },
+  "requireSpaceAfterKeywords": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "switch",
+    "return",
+    "try",
+    "catch",
+    "function"
+  ]
+}

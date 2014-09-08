@@ -1,0 +1,8 @@
+node_modules
+dist
+.project
+.DS_Store
+.settings
+.externalToolBuilders
+tmp
+npm-debug.log

@@ -1,0 +1,35 @@
+{
+  "name": "icepick",
+  "version": "0.0.0",
+  "description": "Utilities for working with frozen objects",
+  "main": "icepick.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/aearly/icepick"
+  },
+  "keywords": [
+    "freeze",
+    "frozen",
+    "immutable",
+    "collections",
+    "mori",
+    "clojure"
+  ],
+  "author": "Alexander Early <alexander.early@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aearly/icepick/issues"
+  },
+  "homepage": "https://github.com/aearly/icepick",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-cli": "~0.1.13",
+    "grunt-release": "~0.7.0",
+    "jscs": "~1.6.1",
+    "jshint": "~2.5.5",
+    "mocha": "~1.21.4"
+  }
+}
