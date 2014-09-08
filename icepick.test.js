@@ -1,6 +1,6 @@
 var
   expect = require("expect.js"),
-  i = require("../app/icepick");
+  i = require("../icepick");
 
 describe("icepick", function () {
   "use strict";

@@ -6,27 +6,56 @@
  * === their previous values.
  *
  * Inspired by clojure/mori and Immutable.js
- *
- * Experimental.  If this works out, move to its own library.
  */
 
 "use strict";
 
-var _ = require("lodash"),
-  i = exports;
+var i = exports;
 
+// we only care about objects or arrays for now
 function weCareAbout(val) {
-  return _.isArray(val) || _.isObject(val);
+  return Array.isArray(val) || (typeof val === "object");
+}
+
+function arrayClone(arr) {
+  var index = 0,
+    length = arr.length,
+    result = arr.constructor(length);
+  for (; index < length; index += 1) {
+    result[index] = arr[index];
+  }
+  return result;
+}
+
+function objClone(obj) {
+  var index = 0,
+    keys = Object.keys(obj),
+    length = keys.length,
+    result = {};
+
+  for (; index < length; index += 1) {
+    result[keys[index]] = obj[keys[index]];
+  }
+  return result;
+}
+
+function clone(obj) {
+  if (Array.isArray(obj)) {
+    return arrayClone(obj);
+  } else {
+    return objClone(obj);
+  }
 }
 
 function baseFreeze(obj, prevNodes) {
-  if (_.any(prevNodes, function (node) { return node === obj; })) {
+  if (prevNodes.filter(function (node) { return node === obj; }).length > 0) {
     throw new Error("object has a reference cycle");
   }
 
   Object.freeze(obj);
   prevNodes.push(obj);
-  _.each(obj, function (prop) {
+  Object.keys(obj).forEach(function (key) {
+    var prop = obj[key];
     if (weCareAbout(prop)) {
       baseFreeze(prop, prevNodes);
     }
@@ -53,7 +82,7 @@ exports.freeze = function freeze(obj) {
  * @return {Object|Array}        new object hierarchy with modifications
  */
 exports.assoc = function assoc(obj, key, value) {
-  var newObj = _.clone(obj);
+  var newObj = clone(obj);
 
   if (weCareAbout(value) && !Object.isFrozen(value)) {
     value = baseFreeze(value, []);
@@ -90,7 +119,7 @@ exports.assocIn = function assocIn(obj, path, value) {
  * @return {Object}       value, or undefined
  */
 function baseGet(obj, path) {
-  return _.reduce(path || [], function (val, key) {
+  return (path || []).reduce(function (val, key) {
     return val[key];
   }, obj);
 }
