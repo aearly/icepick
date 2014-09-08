@@ -20,7 +20,7 @@ function weCareAbout(val) {
 function arrayClone(arr) {
   var index = 0,
     length = arr.length,
-    result = arr.constructor(length);
+    result = Array(length);
   for (; index < length; index += 1) {
     result[index] = arr[index];
   }
@@ -31,10 +31,12 @@ function objClone(obj) {
   var index = 0,
     keys = Object.keys(obj),
     length = keys.length,
+    key,
     result = {};
 
   for (; index < length; index += 1) {
-    result[keys[index]] = obj[keys[index]];
+    key = keys[index];
+    result[key] = obj[key];
   }
   return result;
 }
