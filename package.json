@@ -30,7 +30,7 @@
     "grunt-cli": "~0.1.13",
     "grunt-release": "~0.7.0",
     "jscs": "~1.5.9",
-    "jshint": "~2.5.5",
+    "jshint": "~2.6.0",
     "mocha": "~1.21.4"
   },
   "dependencies": {}

@@ -1,3 +1,4 @@
+/* jshint elision:true */
 var
   expect = require("expect.js"),
   i = require("../icepick");
@@ -90,7 +91,6 @@ describe("icepick", function () {
       var a = i.freeze([1, 2, 3]),
         result = i.dissoc(a, 1);
 
-      /* jshint elision:true */
       expect(result).to.eql([1, , 3]);
     });
   });
