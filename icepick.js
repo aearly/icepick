@@ -170,10 +170,13 @@ exports.updateIn = function updateIn(coll, path, callback) {
 
     return Object.freeze(newArr);
   };
+
+  exports[methodName].displayName =
+  exports[methodName].name = "icepick." + methodName;
 });
 
 // splice is special because it is variadic
-exports.splice = function (arr/*, args*/) {
+exports.splice = function splice(arr/*, args*/) {
   var newArr = arrayClone(arr),
     args = rest(arguments);
 
