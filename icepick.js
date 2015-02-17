@@ -17,6 +17,8 @@ var i = exports,
 function weCareAbout(val) {
   return null !== val && (Array.isArray(val) || (typeof val === "object"));
 }
+// for testing
+exports._weCareAbout = weCareAbout;
 
 function arrayClone(arr) {
   var index = 0,

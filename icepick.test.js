@@ -221,3 +221,24 @@ describe("icepick", function () {
 
 
 });
+
+
+describe("internals", function () {
+  describe("_weCareAbout", function () {
+    it("should care about objects", function () {
+      expect(i._weCareAbout({})).to.equal(true);
+    });
+    it("should care about arrays", function () {
+      expect(i._weCareAbout([])).to.equal(true);
+    });
+    it("should care about dates", function () {
+      expect(i._weCareAbout([])).to.equal(true);
+    });
+    it("should not care about null", function () {
+      expect(i._weCareAbout(null)).to.equal(false);
+    });
+    it("should not care about undefined", function () {
+      expect(i._weCareAbout(null)).to.equal(false);
+    });
+  });
+});
