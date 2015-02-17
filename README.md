@@ -74,7 +74,7 @@ var newColl = i.dissoc(coll, "b"); // {a: 1, c: 3}
 
 var arr = ["a", "b", "c"];
 
-var newArr = i.dissoc(arr, 2); // ["a", , "d"]
+var newArr = i.dissoc(arr, 2); // ["a", , "c"]
 ```
 
 
