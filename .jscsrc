@@ -4,7 +4,6 @@
   "validateJSDoc": {
     "requireParamTypes": false
   },
-  "requireMultipleVarDecl": "onevar",
   "disallowMultipleLineBreaks": null,
   "requireLineFeedAtFileEnd": null,
   "maximumLineLength": {
