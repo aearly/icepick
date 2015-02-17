@@ -78,6 +78,23 @@ describe("icepick", function () {
     });
   });
 
+  describe("dissoc", function () {
+    it("should work with objecs", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+        result = i.dissoc(o, "b");
+
+      expect(result).to.eql({a:1, c:3});
+    });
+
+    it("should work with arrays (poorly)", function () {
+      var a = i.freeze([1, 2, 3]),
+        result = i.dissoc(a, 1);
+
+      /* jshint elision:true */
+      expect(result).to.eql([1, , 3]);
+    });
+  });
+
   describe("assocIn", function () {
     it("should work recursively", function () {
       var o = i.freeze({a: 1, b: 2, c: {a: 4}}),

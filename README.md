@@ -8,7 +8,7 @@ Utilities for working with frozen objects
 
 A quick and dirty way to do this is to just `_.cloneDeep()` or `JSON.parse(JSON.stringify())` your object, set the new properties, and re-freeze, but this operation is expensive, especially if you are only changing a single property in a large structure.  It also means that all the branches that did not have an update will be new objects.
 
-Instead, what `icepick` does is provide functions that allow you to "modify" a frozen structure by returning a partial clone.  Only collections in the structure that had a child change will be changed.  This is very similar to how Clojure's data structures work, albeit more primitive.
+Instead, what `icepick` does is provide functions that allow you to "modify" a frozen structure by returning a partial clone.  Only collections in the structure that had a child change will be changed.  This is very similar to how Clojure's persistent data structures work, albeit more primitive.
 
 This is useful wherever you can avoid expensive computation if you can quickly detect if the source data has changed.  For example, `shouldComponentUpdate` in a React component.  If you are using a frozen hierarchical object to build a system of React components, you can be confident that a component doesn't need to update if its current `props` strictly equal the `nextProps`.
 
@@ -60,6 +60,21 @@ var newColl = i.assoc(coll, "b", 3); // {a: 1, b: 3}
 var arr = ["a", "b", "c"];
 
 var newArr = i.assoc(arr, 2, "d"); // ["a", "b", "d"]
+```
+
+
+### dissoc(collection, key)
+
+The opposite of `assoc`.  Remove the value with the `key` from the collection.  If used on an array, it will create a sparse array.
+
+```javascript
+var coll = {a: 1, b: 2, c: 3};
+
+var newColl = i.dissoc(coll, "b"); // {a: 1, c: 3}
+
+var arr = ["a", "b", "c"];
+
+var newArr = i.dissoc(arr, 2); // ["a", , "d"]
 ```
 
 

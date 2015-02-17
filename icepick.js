@@ -97,6 +97,20 @@ exports.assoc = function assoc(coll, key, value) {
 };
 
 /**
+ * un-set a value on an object or array
+ * @param  {Object|Array}  coll
+ * @param  {String|Number} key  Key or Index
+ * @return {Object|Array}       New object or array
+ */
+exports.dissoc = function dissoc(coll, key) {
+  var newObj = clone(coll);
+
+  delete newObj[key];
+
+  return Object.freeze(newObj);
+};
+
+/**
  * set a value deep in a hierarchical structure
  * @param  {Object|Array} coll
  * @param  {Array}        path    A list of keys to traverse
