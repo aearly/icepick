@@ -171,8 +171,7 @@ exports.updateIn = function updateIn(coll, path, callback) {
     return Object.freeze(newArr);
   };
 
-  exports[methodName].displayName =
-  exports[methodName].name = "icepick." + methodName;
+  exports[methodName].displayName = "icepick." + methodName;
 });
 
 // splice is special because it is variadic
