@@ -10,7 +10,8 @@
 
 "use strict";
 
-var i = exports;
+var i = exports,
+  slice = [].slice;
 
 // we only care about objects or arrays for now
 function weCareAbout(val) {
@@ -155,3 +156,37 @@ exports.updateIn = function updateIn(coll, path, callback) {
   var existingVal = baseGet(coll, path);
   return i.assocIn(coll, path, callback(existingVal));
 };
+
+
+// generate wrappers for the mutative array methods
+["push", "unshift", "pop", "shift", "reverse", "sort"]
+.forEach(function (methodName) {
+  exports[methodName] = function (arr, val) {
+    var newArr = arrayClone(arr);
+
+    newArr[methodName](val);
+
+    return Object.freeze(newArr);
+  };
+});
+
+// splice is special because it is variadic
+exports.splice = function (arr/*, args*/) {
+  var newArr = arrayClone(arr),
+    args = rest(arguments);
+
+  newArr.splice.apply(newArr, args);
+
+  return Object.freeze(newArr);
+};
+
+// slice is non-mutative
+exports.slice = function slice(arr, arg1, arg2) {
+  var newArr = arr.slice(arg1, arg2);
+
+  return Object.freeze(newArr);
+};
+
+function rest(args) {
+  return slice.call(args, 1);
+}

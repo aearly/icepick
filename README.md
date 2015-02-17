@@ -125,6 +125,26 @@ var newColl = i.updateIn(coll, [1, "b"], function (val) {
 }); // [ {a: 1}, {b: 4} ]
 ```
 
+### push
+### pop
+### shift
+### unshift
+### reverse
+### sort
+### splice
+
+Each of these mutative Array methods have been converted:
+
+```javascript
+var a = [1];
+a = i.push(a, 2); // [1, 2];
+a = i.unshift(a, 0); // [0, 1, 2];
+a = i.pop(a); // [0, 1];
+a = i.shift(a); // [1];
+```
+
+`slice` is also provided as a convenience, even though it does not mutate the original array.  It freezes its result, however.
+
 ## FAQ
 
 ### Why not just use Immutable.js or mori?

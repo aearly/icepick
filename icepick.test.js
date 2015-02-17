@@ -153,4 +153,71 @@ describe("icepick", function () {
     });
   });
 
+  describe("Array methods", function () {
+    it("push", function () {
+      var a = i.freeze([1, 2]),
+        result = i.push(a, 3);
+
+      expect(result).to.eql([1, 2, 3]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("unshift", function () {
+      var a = i.freeze([1, 2]),
+        result = i.unshift(a, 3);
+
+      expect(result).to.eql([3, 1, 2]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("pop", function () {
+      var a = i.freeze([1, 2]),
+        result = i.pop(a);
+
+      expect(result).to.eql([1]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("shift", function () {
+      var a = i.freeze([1, 2]),
+        result = i.shift(a);
+
+      expect(result).to.eql([2]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("reverse", function () {
+      var a = i.freeze([1, 2, 3]),
+        result = i.reverse(a);
+
+      expect(result).to.eql([3, 2, 1]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("sort", function () {
+      var a = i.freeze([4, 1, 2, 3]),
+        result = i.sort(a);
+
+      expect(result).to.eql([1, 2, 3, 4]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("splice", function () {
+      var a = i.freeze([1, 2, 3]),
+        result = i.splice(a, 1, 1, 4);
+
+      expect(result).to.eql([1, 4, 3]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("slice", function () {
+      var a = i.freeze([1, 2, 3]),
+        result = i.slice(a, 1, 2);
+
+      expect(result).to.eql([2]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+  });
+
+
 });
