@@ -15,7 +15,7 @@ var i = exports,
 
 // we only care about objects or arrays for now
 function weCareAbout(val) {
-  return Array.isArray(val) || (typeof val === "object");
+  return null !== val && (Array.isArray(val) || (typeof val === "object"));
 }
 
 function arrayClone(arr) {
