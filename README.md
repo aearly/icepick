@@ -129,7 +129,7 @@ var newColl = i.updateIn(coll, [1, "b"], function (val) {
 
 *alias: extend*
 
-Similar to `Object.assign`, this function shallowly merges several objects together, always returning a new, immutable object.
+Similar to `Object.assign`, this function shallowly merges several objects together, always returning a new, immutable object.  Properties of the objects that are Objects or Arrays are deeply frozen.
 
 ```javascript
 var obj1 = {a: 1, b: 2, c: 3};
@@ -159,7 +159,22 @@ a = i.pop(a); // [0, 1];
 a = i.shift(a); // [1];
 ```
 
+* slice(arr, start, [end])
+
 `slice` is also provided as a convenience, even though it does not mutate the original array.  It freezes its result, however.
+
+* map(fn, array)
+* filter(fn, array)
+
+These non-mutative functions that return new arrays are also wrapped for convenience.  Their results are frozen.  Note that the mapping or filtering function is passed first, for easier partial application.
+
+```javascript
+i.map(function (v) {return v * 2}, [1, 2, 3]); // [2, 4, 6]
+
+var removeEvens = _.partial(i.filter, function (v) { return v % 2; });
+
+removeEvents([1, 2, 3]); // [1, 3]
+```
 
 ## FAQ
 

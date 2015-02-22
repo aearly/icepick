@@ -217,6 +217,22 @@ describe("icepick", function () {
       expect(result).to.eql([2]);
       expect(Object.isFrozen(result)).to.be.ok();
     });
+
+    it("map", function () {
+      var a = i.freeze([1, 2, 3]);
+      var result = i.map(function (v) { return v * 2; }, a);
+
+      expect(result).to.eql([2, 4, 6]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("filter", function () {
+      var a = i.freeze([1, 2, 3]);
+      var result = i.filter(function (v) { return v % 2; }, a);
+
+      expect(result).to.eql([1, 3]);
+      expect(Object.isFrozen(result)).to.be.ok();
+    });
   });
 
 
@@ -226,6 +242,7 @@ describe("icepick", function () {
       var o = i.freeze({a: 1, b: 2, c: 3}),
       result = i.assign(o, {"b": 3, "c": 4});
       expect(result).to.eql({a: 1, b: 3, c: 4});
+      expect(result).to.not.equal(o);
       result = i.assign(o, {"d": 4});
       expect(result).to.eql({a: 1, b: 2, c: 3, d: 4});
     });

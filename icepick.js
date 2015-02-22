@@ -195,6 +195,16 @@ exports.slice = function slice(arr, arg1, arg2) {
   return Object.freeze(newArr);
 };
 
+["map", "filter"].forEach(function (methodName) {
+  exports[methodName] = function (fn, arr) {
+    var newArr = arr[methodName](fn);
+
+    return Object.freeze(newArr);
+  };
+
+  exports[methodName].displayName = "icepick." + methodName;
+});
+
 exports.extend =
 exports.assign = function assign(/*...objs*/) {
   var newObj = slice.call(arguments).reduce(singleAssign, {});
