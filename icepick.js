@@ -53,8 +53,15 @@ function clone(coll) {
   }
 }
 
+function freezeIfNeeded(coll) {
+  if (weCareAbout(coll) && !Object.isFrozen(coll)) {
+    return baseFreeze(coll, []);
+  }
+  return coll;
+}
+
 function baseFreeze(coll, prevNodes) {
-  if (prevNodes.filter(function (node) { return node === coll; }).length > 0) {
+  if (prevNodes.some(function (node) { return node === coll; })) {
     throw new Error("object has a reference cycle");
   }
 
@@ -90,10 +97,7 @@ exports.freeze = function freeze(coll) {
 exports.assoc = function assoc(coll, key, value) {
   var newObj = clone(coll);
 
-  if (weCareAbout(value) && !Object.isFrozen(value)) {
-    value = baseFreeze(value, []);
-  }
-  newObj[key] = value;
+  newObj[key] = freezeIfNeeded(value);
 
   return Object.freeze(newObj);
 
@@ -190,6 +194,20 @@ exports.slice = function slice(arr, arg1, arg2) {
 
   return Object.freeze(newArr);
 };
+
+exports.extend =
+exports.assign = function assign(/*...objs*/) {
+  var newObj = slice.call(arguments).reduce(singleAssign, {});
+
+  return Object.freeze(newObj);
+};
+
+function singleAssign(obj1, obj2) {
+  return Object.keys(obj2).reduce(function (obj, key) {
+    obj[key] = freezeIfNeeded(obj2[key]);
+    return obj;
+  }, obj1);
+}
 
 function rest(args) {
   return slice.call(args, 1);

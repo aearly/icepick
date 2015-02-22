@@ -220,6 +220,24 @@ describe("icepick", function () {
   });
 
 
+  describe("assign", function () {
+
+    it("should work", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+      result = i.assign(o, {"b": 3, "c": 4});
+      expect(result).to.eql({a: 1, b: 3, c: 4});
+      result = i.assign(o, {"d": 4});
+      expect(result).to.eql({a: 1, b: 2, c: 3, d: 4});
+    });
+
+    it("should work with multiple args", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+      result = i.assign(o, {"b": 3, "c": 4}, {"d": 4});
+      expect(result).to.eql({a: 1, b: 3, c: 4, d: 4});
+    });
+
+  });
+
 });
 
 

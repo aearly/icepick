@@ -125,15 +125,31 @@ var newColl = i.updateIn(coll, [1, "b"], function (val) {
 }); // [ {a: 1}, {b: 4} ]
 ```
 
-### push
-### pop
-### shift
-### unshift
-### reverse
-### sort
-### splice
+### assign(coll1, coll2, ...)
 
-Each of these mutative Array methods have been converted:
+*alias: extend*
+
+Similar to `Object.assign`, this function shallowly merges several objects together, always returning a new, immutable object.
+
+```javascript
+var obj1 = {a: 1, b: 2, c: 3};
+var obj2 = {c: 4, d: 5};
+
+var result = i.assign(obj1, obj2); // {a: 1, b: 2, c: 4, d: 5}
+assert(obj1 !== result); // true
+```
+
+### Array.prototype methods
+
+* push
+* pop
+* shift
+* unshift
+* reverse
+* sort
+* splice
+
+Each of these mutative Array prototype methods have been converted:
 
 ```javascript
 var a = [1];
