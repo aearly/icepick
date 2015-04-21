@@ -266,8 +266,8 @@ describe("internals", function () {
     it("should care about arrays", function () {
       expect(i._weCareAbout([])).to.equal(true);
     });
-    it("should care about dates", function () {
-      expect(i._weCareAbout([])).to.equal(true);
+    it("should not care about dates", function () {
+      expect(i._weCareAbout(new Date())).to.equal(false);
     });
     it("should not care about null", function () {
       expect(i._weCareAbout(null)).to.equal(false);

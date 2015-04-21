@@ -30,7 +30,7 @@ The API is heavily influenced from Clojure/mori.  In the contexts of these docs 
 
 ### freeze(collection)
 
-Recursively freeze a collection and all its child collections with `Object.freeze()`. Values that are not Arrays or Objects will be ignored.  Does not allow reference cycles.
+Recursively freeze a collection and all its child collections with `Object.freeze()`. Values that are not plain Arrays or Objects will be ignored, including objects created with custom constructors (e.g. `new MyClass()`).  Does not allow reference cycles.
 
 ```javascript
 var coll = {

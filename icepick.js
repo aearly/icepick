@@ -15,7 +15,13 @@ var i = exports,
 
 // we only care about objects or arrays for now
 function weCareAbout(val) {
-  return null !== val && (Array.isArray(val) || (typeof val === "object"));
+  return null !== val &&
+    (Array.isArray(val) ||
+      // This will skip objects created with `new Foo()`
+      // but not objects created with `Object.create(proto)`
+      // The benefit is ignoring DOM elements, which are often
+      // circular.
+      (typeof val === "object" && val.constructor === Object));
 }
 // for testing
 exports._weCareAbout = weCareAbout;
