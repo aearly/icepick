@@ -4,5 +4,6 @@ dist
 .DS_Store
 .settings
 .externalToolBuilders
+.nyc_output
 tmp
 npm-debug.log

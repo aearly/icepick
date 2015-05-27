@@ -1,4 +1,5 @@
 # icepick [![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick)
+[![Coverage Status](https://coveralls.io/repos/caolan/async/badge.svg?branch=)](https://coveralls.io/r/caolan/async?branch=)
 
 Utilities for working with frozen objects
 

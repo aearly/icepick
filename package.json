@@ -4,7 +4,9 @@
   "description": "Utilities for working with frozen objects",
   "main": "icepick.js",
   "scripts": {
-    "test": "make ci"
+    "test": "make ci",
+    "coverage": "nyc npm test && nyc report",
+    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -25,13 +27,15 @@
   },
   "homepage": "https://github.com/aearly/icepick",
   "devDependencies": {
+    "coveralls": "~2.11.2",
     "expect.js": "~0.3.1",
     "grunt": "~0.4.5",
     "grunt-cli": "~0.1.13",
     "grunt-release": "~0.7.0",
     "jscs": "~1.5.9",
     "jshint": "~2.6.0",
-    "mocha": "~1.21.4"
+    "mocha": "~1.21.4",
+    "nyc": "~2.2.1"
   },
   "dependencies": {}
 }
