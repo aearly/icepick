@@ -50,6 +50,15 @@ describe("icepick", function () {
       expect(result).to.eql({a: 1, b: 2, c: 3, d: 4});
     });
 
+    it("should freeze objects you assoc", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+        result = i.assoc(o, "b", {d: 5});
+
+      expect(result).to.eql({a: 1, b: {d: 5}, c: 3});
+
+      expect(Object.isFrozen(result.b)).to.be.ok();
+    });
+
     it("should work with arrays", function () {
       var a = i.freeze([1, 2, 3]),
         result = i.assoc(a, 1, 4);
@@ -61,6 +70,15 @@ describe("icepick", function () {
 
       result = i.assoc(a, 3, 4);
       expect(result).to.eql([1, 2, 3, 4]);
+    });
+
+    it("should freeze arrays you assoc", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+        result = i.assoc(o, "b", [1, 2]);
+
+      expect(result).to.eql({a: 1, b: [1, 2], c: 3});
+
+      expect(Object.isFrozen(result.b)).to.be.ok();
     });
 
     it("should return a frozen copy", function () {
