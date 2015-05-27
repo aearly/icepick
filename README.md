@@ -16,6 +16,8 @@ This is useful wherever you can avoid expensive computation if you can quickly d
 
 ### Usage
 
+`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it or wrap it with `browserify --standalone`.
+
 ```bash
 $ npm install icepick --save
 ```
@@ -26,7 +28,7 @@ $ npm install icepick --save
 var i = require("icepick");
 ```
 
-The API is heavily influenced from Clojure/mori.  In the contexts of these docs "collection" means a plain, frozen `Object` or `Array`.  Only JSON-style collections are supported.  Functions, Dates, RegExps, DOM elements, and others are left as is, and could mutate if they exist in your hierarchy.
+The API is heavily influenced from Clojure/mori.  In the contexts of these docs "collection" means a plain, frozen `Object` or `Array`.  Only JSON-style collections are supported.  Functions, Dates, RegExps, DOM elements, and others are left as-is, and could mutate if they exist in your hierarchy.
 
 ### freeze(collection)
 
@@ -44,6 +46,11 @@ var coll = {
 i.freeze(coll);
 
 coll.c.d = "baz"; // throws Error
+
+var circular = {bar: {}};
+circular.bar.foo = circular;
+
+i.freeze(circular); // throws Error
 ```
 
 
@@ -181,6 +188,16 @@ removeEvents([1, 2, 3]); // [1, 3]
 ### Why not just use Immutable.js or mori?
 
 Those two libraries introduce their own types.  If you need to share a frozen data structure with other libraries or other 3rd-party code, you force those downstream from you to use Immutable.js or mori (and in the case of mori, the exact version you use).  Also, since you can build your data structures using plain JS, creating the initial representation is faster.  The overhead of`Object.freeze()` is negligible.
+
+### How does this differ from `React.addons.update` or `seamless-immutable`.
+
+All three of these libraries are very similar in their goals -- provide incremental updates of plain JS objects.  They mainly differ in their APIs.
+
+[`React.addons.update`](https://facebook.github.io/react/docs/update.html) provides a single function to which you pass an object of commands.  While this can be convenient to do many updates in a single batch, the syntax of the command object is very cumbersome, especially when dealing with computed property names.  It also does not freeze the objects it operates on, leaving them open to modifications elsewhere in your code.
+
+[`seamless-immutable`](https://github.com/rtfeldman/seamless-immutable) is the most similar to `icepick`.  Its main difference is that it adds more methods to the prototypes of objects, and overrides array built-ins like `map` and `filter` to return frozen objects.  It also adds a couple utility functions, like `asMutable` and `merge`. `icepick` does not modify the the methods or properties of collections in order to function, it merely provides a set of functions to operate on them, similar to Lodash, Underscore, or Ramda.  This means that when passing frozen objects to third-party libraries, they will be able to `map` over them and obtain mutable arrays.  `seamless-immutable` handles `Date`s, which `icepick` leaves as-is currently (as well as any other objects with custom constructors).  `icepick` will detect circular references within an object and throw an Error, `seamless-immutable` will run into infinite recursion in such a case.
+
+I also would like to benchmark all of these libraries to see in what cases each is faster.
 
 ### Isn't this horribly slow?
 
