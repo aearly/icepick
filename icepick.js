@@ -10,8 +10,7 @@
 
 "use strict";
 
-var i = exports,
-  slice = [].slice;
+var i = exports;
 
 // we only care about objects or arrays for now
 function weCareAbout(val) {
@@ -213,7 +212,7 @@ exports.slice = function slice(arr, arg1, arg2) {
 
 exports.extend =
 exports.assign = function assign(/*...objs*/) {
-  var newObj = slice.call(arguments).reduce(singleAssign, {});
+  var newObj = _slice(arguments).reduce(singleAssign, {});
 
   return Object.freeze(newObj);
 };
@@ -225,6 +224,18 @@ function singleAssign(obj1, obj2) {
   }, obj1);
 }
 
+function _slice(array, start) {
+  var begin = start || 0;
+  var len = array.length;
+  len -= begin;
+  len = len < 0 ? 0 : len;
+  var result = new Array(len);
+  for (var i = 0; i < len; i += 1) {
+    result[i] = array[i + begin];
+  }
+  return result;
+}
+
 function rest(args) {
-  return slice.call(args, 1);
+  return _slice(args, 1);
 }

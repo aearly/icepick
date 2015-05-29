@@ -19,7 +19,6 @@
   "browser": true,
   "node": true,
   "indent": 2,
-  "onevar": true,
   "white": true,
   "strict": false,
   "evil": true,
