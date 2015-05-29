@@ -5,12 +5,14 @@
     "requireParamTypes": false
   },
   "disallowMultipleLineBreaks": null,
+  "disallowMultipleVarDecl": null,
   "requireLineFeedAtFileEnd": null,
   "maximumLineLength": {
     "value": 90,
     "allowComments": false,
     "allowRegex": true
   },
+  "disallowSpacesInAnonymousFunctionExpression": null,
   "requireSpaceAfterKeywords": [
     "if",
     "else",
