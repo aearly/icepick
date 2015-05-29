@@ -20,8 +20,13 @@ function weCareAbout(val) {
       // but not objects created with `Object.create(proto)`
       // The benefit is ignoring DOM elements, which are often
       // circular.
-      (typeof val === "object" && val.constructor === Object));
+      isObjectLike(val));
 }
+
+function isObjectLike(val) {
+  return typeof val === "object" && val.constructor === Object;
+}
+
 // for testing
 exports._weCareAbout = weCareAbout;
 
@@ -222,6 +227,38 @@ function singleAssign(obj1, obj2) {
     obj[key] = freezeIfNeeded(obj2[key]);
     return obj;
   }, obj1);
+}
+
+exports.merge = merge;
+function merge(target, source) {
+  return Object.keys(source).reduce(function (obj, key) {
+    var sourceVal = source[key];
+    var targetVal = obj[key];
+
+    if (weCareAbout(sourceVal) && weCareAbout(targetVal)) {
+      // if they are both frozen and reference equal, assume they are deep equal
+      if (Object.isFrozen(sourceVal) &&
+          Object.isFrozen(targetVal) &&
+          sourceVal === targetVal) {
+        return obj;
+      }
+      if (Array.isArray(sourceVal)) {
+        return i.assoc(obj, key, sourceVal);
+      }
+      // recursively merge pairs of objects
+      return assocIfDifferent(obj, key, merge(targetVal, sourceVal));
+    }
+
+    // primitive values, stuff with prototypes
+    return assocIfDifferent(obj, key, sourceVal);
+  }, target);
+}
+
+function assocIfDifferent(target, key, value) {
+  if (target[key] === value) {
+    return target;
+  }
+  return i.assoc(target, key, value);
 }
 
 function _slice(array, start) {

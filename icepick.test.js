@@ -273,6 +273,58 @@ describe("icepick", function () {
 
   });
 
+  describe("merge", function () {
+
+    it("should merge nested objects", function () {
+      var o1 = i.freeze({a: 1, b: {c: 1, d: 1}});
+      var o2 = i.freeze({a: 1, b: {c: 2}, e: 2});
+
+      var result = i.merge(o1, o2);
+      expect(result).to.eql({a: 1, b: {c: 2, d: 1}, e: 2});
+    });
+
+    it("should replace arrays", function () {
+      var o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1});
+      var o2 = i.freeze({a: 2, b: {c: [2]}});
+
+      var result = i.merge(o1, o2);
+      expect(result).to.eql({a: 2, b: {c: [2]}, d: 1});
+    });
+
+    it("should overwrite with nulls", function () {
+      var o1 = i.freeze({a: 1, b: {c: [1, 1]}});
+      var o2 = i.freeze({a: 2, b: {c: null}});
+
+      var result = i.merge(o1, o2);
+      expect(result).to.eql({a: 2, b: {c: null}});
+    });
+
+    it("should overwrite primitives with objects", function () {
+      var o1 = i.freeze({a: 1, b: 1});
+      var o2 = i.freeze({a: 2, b: {c: 2}});
+
+      var result = i.merge(o1, o2);
+      expect(result).to.eql({a: 2, b: {c: 2}});
+    });
+
+    it("should overwrite objects with primitives", function () {
+      var o1 = i.freeze({a: 1, b: {c: 2}});
+      var o2 = i.freeze({a: 1, b: 2});
+
+      var result = i.merge(o1, o2);
+      expect(result).to.eql({a: 1, b: 2});
+    });
+
+    it("should keep references the same if nothing changes", function () {
+      var o1 = i.freeze({a: 1, b: {c: 1, d: 1, e: [1]}});
+      var o2 = i.freeze({a: 1, b: {c: 1, d: 1, e: o1.b.e}});
+      var result = i.merge(o1, o2);
+      expect(result).to.equal(o1);
+      expect(result.b).to.equal(o1.b);
+    });
+
+  });
+
 });
 
 
