@@ -231,6 +231,9 @@ function singleAssign(obj1, obj2) {
 
 exports.merge = merge;
 function merge(target, source) {
+  if (target == null || source == null) {
+    return target;
+  }
   return Object.keys(source).reduce(function (obj, key) {
     var sourceVal = source[key];
     var targetVal = obj[key];
@@ -272,6 +275,8 @@ function _slice(array, start) {
   }
   return result;
 }
+
+exports._slice = _slice;
 
 function rest(args) {
   return _slice(args, 1);

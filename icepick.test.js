@@ -328,6 +328,11 @@ describe("icepick", function () {
       expect(result.b).to.equal(o1.b);
     });
 
+    it("should handle undefined parameters", function () {
+      expect(i.merge({}, undefined)).to.eql({});
+      expect(i.merge(undefined, {})).to.eql(undefined);
+    });
+
   });
 
 });
@@ -349,6 +354,17 @@ describe("internals", function () {
     });
     it("should not care about undefined", function () {
       expect(i._weCareAbout(null)).to.equal(false);
+    });
+  });
+
+  describe("_slice", function () {
+    it("should work", function () {
+      expect(i._slice([1, 2, 3], 2)).to.eql([3]);
+      expect(i._slice([1, 2, 3], 1)).to.eql([2, 3]);
+      expect(i._slice([1, 2, 3], 0)).to.eql([1, 2, 3]);
+      expect(i._slice([1, 2, 3], 4)).to.eql([]);
+      expect(i._slice([], 0)).to.eql([]);
+      expect(i._slice([], 1)).to.eql([]);
     });
   });
 });
