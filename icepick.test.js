@@ -157,6 +157,11 @@ describe("icepick", function () {
         });
       expect(i.getIn(o, ["c", 0, "b"])).to.equal(4);
     });
+
+    it("should work without a path", function () {
+      var o = i.freeze({a: {b: 1}});
+      expect(i.getIn(o)).to.equal(o);
+    });
   });
 
   describe("updateIn", function () {
