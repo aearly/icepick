@@ -24,7 +24,7 @@ function weCareAbout(val) {
 }
 
 function isObjectLike(val) {
-  return typeof val === "object" && val.constructor === Object;
+  return typeof val === "object" && typeof val.nodeType === "undefined" && Object.prototype.toString.call(date) !== '[object Date]';
 }
 
 // for testing
