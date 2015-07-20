@@ -113,6 +113,22 @@ exports.freeze = function freeze(coll) {
 };
 
 /**
+ * recursively un-freeze an object, by cloning frozen collections
+ * @param  {[type]} coll [description]
+ * @return {[type]}      [description]
+ */
+exports.thaw = function thaw(coll) {
+  if (weCareAbout(coll) && Object.isFrozen(coll)) {
+    var newColl = clone(coll);
+    Object.keys(newColl).forEach(function (key) {
+      newColl[key] = thaw(newColl[key]);
+    });
+    return newColl;
+  }
+  return coll;
+};
+
+/**
  * set a value on an object or array
  * @param  {Object|Array}  coll
  * @param  {String|Number} key   Key or index

@@ -55,6 +55,20 @@ circular.bar.foo = circular;
 i.freeze(circular); // throws Error
 ```
 
+### thaw(collection)
+
+Recursively un-freeze a collection by creating a partial clone. Object that are not frozen or that have custom prototypes are left as-is.  This is useful when interfacing with other libraries.
+
+```javascript
+var coll = i.freeze({a: "foo", b: [1, 2, 3], c: {d: "bar"}, e: new Foo() });
+var thawed = i.thaw(coll);
+
+assert(!Object.isFrozen(thawed));
+assert(!Object.isFrozen(thawed.c));
+assert(thawed.c !== coll.c);
+assert(thawed.e === coll.e);
+```
+
 
 ### assoc(collection, key, value)
 

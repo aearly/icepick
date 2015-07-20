@@ -39,6 +39,29 @@ describe("icepick", function () {
 
   });
 
+  describe("thaw", function () {
+    function Foo () {}
+
+    it("should thaw objects", function () {
+      var o = i.freeze({
+        a: {},
+        b: 1,
+        c: new Foo(),
+        d: [{e: 1}]
+      });
+
+      var thawed = i.thaw(o);
+
+      expect(thawed).to.eql(o);
+      expect(Object.isFrozen(thawed)).to.be(false);
+      expect(Object.isFrozen(thawed.a)).to.be(false);
+      expect(o.a).to.not.equal(thawed.a);
+      expect(o.d).to.not.equal(thawed.d);
+      expect(o.d[0]).to.not.equal(thawed.d[0]);
+      expect(o.c).to.equal(thawed.c);
+    });
+  });
+
   describe("assoc", function () {
     it("should work with objects", function () {
       var o = i.freeze({a: 1, b: 2, c: 3}),
