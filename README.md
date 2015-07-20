@@ -16,7 +16,7 @@ This is useful wherever you can avoid expensive computation if you can quickly d
 
 ### Usage
 
-`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it or wrap it with `browserify --standalone`.
+`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it or wrap it with `browserify icepick.js --standalone icepick`.
 
 ```bash
 $ npm install icepick --save
@@ -29,6 +29,8 @@ var i = require("icepick");
 ```
 
 The API is heavily influenced from Clojure/mori.  In the contexts of these docs "collection" means a plain, frozen `Object` or `Array`.  Only JSON-style collections are supported.  Functions, Dates, RegExps, DOM elements, and others are left as-is, and could mutate if they exist in your hierarchy.
+
+If you set `process.env.NODE_ENV` to `"production"` in your build, using `envify` or its equivalent, freezing objects will be skipped.  This can improve performance for your production build.
 
 ### freeze(collection)
 
@@ -87,7 +89,7 @@ var newArr = i.dissoc(arr, 2); // ["a", , "c"]
 
 ### assocIn(collection, path, value)
 
-Set a value inside a hierarchical collection.  `path` is an array of keys inside the object.  Returns a partial copy of the original collection. If not all of the collections exist, an error will be thrown.
+Set a value inside a hierarchical collection.  `path` is an array of keys inside the object.  Returns a partial copy of the original collection. Intermediate objects will be created if they don't exist.
 
 ```javascript
 var coll = {
@@ -102,11 +104,15 @@ var newColl = i.assocIn(coll, ["c", "d"], "baz");
 
 assert(newColl.c.d === "baz");
 assert(newColl.b === coll.b);
+
+var coll = {};
+var newColl = i.assocIn(coll, ["a", "b", "c"], 1);
+assert(newColl.a.b.c === 1);
 ```
 
 ### getIn(collection, path)
 
-Get a value inside a hierarchical collection using a path of keys.  A convenience method -- in most cases plain JS syntax will be simpler.
+Get a value inside a hierarchical collection using a path of keys.  Returns `undefined` if the value does not exist.  A convenience method -- in most cases plain JS syntax will be simpler.
 
 ```javascript
 var coll = i.freeze([
