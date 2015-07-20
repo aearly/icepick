@@ -157,7 +157,7 @@ exports.assocIn = function assocIn(coll, path, value) {
   } else {
     // break the problem down.  Assoc this object with the first key
     // and the result of assocIn with the rest of the keys
-    return i.assoc(coll, key0, assocIn(coll[key0], path.slice(1), value));
+    return i.assoc(coll, key0, assocIn(coll[key0] || {}, path.slice(1), value));
   }
 };
 

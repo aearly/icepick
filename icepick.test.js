@@ -143,6 +143,11 @@ describe("icepick", function () {
       expect(result.c[0].b).to.equal(o.c[0].b);
       expect(result.c[1]).to.equal(o.c[1]);
     });
+
+    it("should create collections if they don't exist", function () {
+      var result = i.assocIn({}, ["a", "b", "c"], 1);
+      expect(result).to.eql({a: {b: {c: 1}}});
+    });
   });
 
   describe("getIn", function () {
@@ -174,6 +179,7 @@ describe("icepick", function () {
         ]
       });
 
+      expect(i.getIn(o, ["q"])).to.equal(undefined);
       expect(i.getIn(o, ["a", "s", "d"])).to.equal(undefined);
     });
   });
@@ -187,6 +193,14 @@ describe("icepick", function () {
 
       expect(result).to.eql({a: 1, b: 2, c: {a: 8}});
 
+    });
+
+    it("should create collections if they don't exist", function () {
+      var result = i.updateIn({}, ["a", 1, "c"], function (val) {
+        expect(val).to.be(undefined);
+        return 1;
+      });
+      expect(result).to.eql({a: {"1": {c: 1}}});
     });
   });
 
