@@ -64,10 +64,22 @@ function clone(coll) {
 }
 
 function freezeIfNeeded(coll) {
-  if (weCareAbout(coll) && !Object.isFrozen(coll)) {
+  if (
+      weCareAbout(coll) &&
+      (
+        !Object.isFrozen(coll) &&
+        process.env.NODE_ENV !== "production"
+      )) {
     return baseFreeze(coll, []);
   }
   return coll;
+}
+
+function _freeze(coll) {
+  if (process.env.NODE_ENV === "production") {
+    return coll;
+  }
+  return Object.freeze(coll);
 }
 
 function baseFreeze(coll, prevNodes) {
@@ -94,6 +106,9 @@ function baseFreeze(coll, prevNodes) {
  * @return {Object|Array}
  */
 exports.freeze = function freeze(coll) {
+  if (process.env.NODE_ENV === "production") {
+    return coll;
+  }
   return baseFreeze(coll, []);
 };
 
@@ -109,7 +124,7 @@ exports.assoc = function assoc(coll, key, value) {
 
   newObj[key] = freezeIfNeeded(value);
 
-  return Object.freeze(newObj);
+  return _freeze(newObj);
 
 };
 
@@ -124,7 +139,7 @@ exports.dissoc = function dissoc(coll, key) {
 
   delete newObj[key];
 
-  return Object.freeze(newObj);
+  return _freeze(newObj);
 };
 
 /**
@@ -182,7 +197,7 @@ exports.updateIn = function updateIn(coll, path, callback) {
 
     newArr[methodName](val);
 
-    return Object.freeze(newArr);
+    return _freeze(newArr);
   };
 
   exports[methodName].displayName = "icepick." + methodName;
@@ -195,21 +210,21 @@ exports.splice = function splice(arr/*, args*/) {
 
   newArr.splice.apply(newArr, args);
 
-  return Object.freeze(newArr);
+  return _freeze(newArr);
 };
 
 // slice is non-mutative
 exports.slice = function slice(arr, arg1, arg2) {
   var newArr = arr.slice(arg1, arg2);
 
-  return Object.freeze(newArr);
+  return _freeze(newArr);
 };
 
 ["map", "filter"].forEach(function (methodName) {
   exports[methodName] = function (fn, arr) {
     var newArr = arr[methodName](fn);
 
-    return Object.freeze(newArr);
+    return _freeze(newArr);
   };
 
   exports[methodName].displayName = "icepick." + methodName;
@@ -219,7 +234,7 @@ exports.extend =
 exports.assign = function assign(/*...objs*/) {
   var newObj = _slice(arguments).reduce(singleAssign, {});
 
-  return Object.freeze(newObj);
+  return _freeze(newObj);
 };
 
 function singleAssign(obj1, obj2) {
@@ -240,8 +255,10 @@ function merge(target, source) {
 
     if (weCareAbout(sourceVal) && weCareAbout(targetVal)) {
       // if they are both frozen and reference equal, assume they are deep equal
-      if (Object.isFrozen(sourceVal) &&
-          Object.isFrozen(targetVal) &&
+      if ((
+            (Object.isFrozen(sourceVal) && Object.isFrozen(targetVal)) ||
+            process.env.NODE_ENV === "production"
+          ) &&
           sourceVal === targetVal) {
         return obj;
       }

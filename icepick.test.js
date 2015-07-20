@@ -338,6 +338,37 @@ describe("icepick", function () {
 });
 
 
+describe("production mode", function () {
+  var oldEnv;
+  before(function () {
+    oldEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "production";
+  });
+
+  after(function () {
+    process.env.NODE_ENV = oldEnv;
+  });
+
+  it("should not freeze objects", function () {
+    var result = i.freeze({});
+    expect(Object.isFrozen(result)).to.be(false);
+  });
+
+  it("should not freeze objects that are assoc'd", function () {
+    var result = i.assoc({}, "a", {});
+    expect(Object.isFrozen(result)).to.be(false);
+    expect(Object.isFrozen(result.a)).to.be(false);
+  });
+
+  it("merge should keep references the same if nothing changes", function () {
+    var o1 = i.freeze({a: 1, b: {c: 1, d: 1, e: [1]}});
+    var o2 = i.freeze({a: 1, b: {c: 1, d: 1, e: o1.b.e}});
+    var result = i.merge(o1, o2);
+    expect(result).to.equal(o1);
+    expect(result.b).to.equal(o1.b);
+  });
+});
+
 describe("internals", function () {
   describe("_weCareAbout", function () {
     it("should care about objects", function () {
