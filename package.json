@@ -1,6 +1,6 @@
 {
   "name": "icepick",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Utilities for working with frozen objects",
   "main": "icepick.js",
   "scripts": {
