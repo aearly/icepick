@@ -182,6 +182,14 @@ describe("icepick", function () {
       expect(i.getIn(o, ["q"])).to.equal(undefined);
       expect(i.getIn(o, ["a", "s", "d"])).to.equal(undefined);
     });
+
+    it("should return undefined for a non-existant path (null)", function () {
+      var o = i.freeze({
+        a: null
+      });
+
+      expect(i.getIn(o, ["a", "b"])).to.equal(undefined);
+    });
   });
 
   describe("updateIn", function () {
