@@ -148,7 +148,7 @@ describe("icepick", function () {
   describe("getIn", function () {
     it("should work", function () {
       var o = i.freeze({
-          a: 1,
+          a: 0,
           b: {a: 2},
           c: [
             {a: 3, b: 4},
@@ -156,11 +156,25 @@ describe("icepick", function () {
           ]
         });
       expect(i.getIn(o, ["c", 0, "b"])).to.equal(4);
+      expect(i.getIn(o, ["a"])).to.equal(0);
     });
 
     it("should work without a path", function () {
       var o = i.freeze({a: {b: 1}});
       expect(i.getIn(o)).to.equal(o);
+    });
+
+    it("should return undefined for a non-existant path", function () {
+      var o = i.freeze({
+        a: 1,
+        b: {a: 2},
+        c: [
+          {a: 3, b: 4},
+          {a: 4}
+        ]
+      });
+
+      expect(i.getIn(o, ["a", "s", "d"])).to.equal(undefined);
     });
   });
 

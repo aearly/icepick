@@ -168,9 +168,17 @@ exports.assocIn = function assocIn(coll, path, value) {
  * @return {Object}       value, or undefined
  */
 function baseGet(coll, path) {
-  return (path || []).reduce(function (val, key) {
-    return val[key];
-  }, coll);
+  path = path || [];
+  var len = path.length;
+  var val = coll;
+  var idx = 0;
+
+  while (idx < len && val) {
+    val = val[path[idx]];
+    idx += 1;
+  }
+
+  return val;
 }
 
 exports.getIn = baseGet;
