@@ -436,6 +436,60 @@ describe("icepick", function () {
 
 });
 
+describe("chain", function () {
+
+  it("should wrap and unwrap a value", function () {
+    var a = [1, 2, 3];
+    var result = i.chain(a).value();
+    expect(result).to.eql(a);
+  });
+
+  it("should work with a simple operation", function () {
+    var a = [1, 2, 3];
+    var result = i.chain(a)
+      .assoc(1, 4)
+      .value();
+    expect(result).to.eql([1, 4, 3]);
+    expect(result).to.not.equal(a);
+    expect(Object.isFrozen(result)).to.be.ok();
+  });
+
+  it("should work with multiple operations", function () {
+    var a = [1, 2, 3];
+    var result = i.chain(a)
+      .assoc(1, 4)
+      .reverse()
+      .pop()
+      .push(5)
+      .value();
+    expect(result).to.eql([3, 4, 5]);
+    expect(result).to.not.equal(a);
+    expect(Object.isFrozen(result)).to.be.ok();
+  });
+
+  it("should work with multiple operations (more complicated)", function () {
+    var o = {
+      a: [1, 2, 3],
+      b: {c: 1},
+      d: 4
+    };
+    var result = i.chain(o)
+      .assocIn(["a", 2], 4)
+      .merge({b: {c: 2, c2: 3}})
+      .assoc("e", 2)
+      .dissoc("d")
+      .value();
+    expect(result).to.eql({
+      a: [1, 2, 4],
+      b: {c: 2, c2: 3},
+      e: 2
+    });
+    expect(result).to.not.equal(o);
+    expect(Object.isFrozen(result)).to.be.ok();
+  });
+
+});
+
 
 describe("production mode", function () {
   var oldEnv;

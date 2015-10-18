@@ -27,8 +27,6 @@ function isObjectLike(val) {
   return typeof val === "object" && val.constructor === Object;
 }
 
-// for testing
-exports._weCareAbout = weCareAbout;
 
 function arrayClone(arr) {
   var index = 0,
@@ -313,8 +311,33 @@ function _slice(array, start) {
   return result;
 }
 
-exports._slice = _slice;
 
 function rest(args) {
   return _slice(args, 1);
 }
+
+
+var chainProto = {
+  value: function value() {
+    return this.val;
+  }
+};
+
+Object.keys(exports).forEach(function (methodName) {
+  chainProto[methodName] = function (/*...args*/) {
+    var args = _slice(arguments);
+    args.unshift(this.val);
+    this.val = exports[methodName].apply(null, args);
+    return this;
+  };
+});
+
+exports.chain = function chain(val) {
+  var wrapped = Object.create(chainProto);
+  wrapped.val = val;
+  return wrapped;
+};
+
+// for testing
+exports._weCareAbout = weCareAbout;
+exports._slice = _slice;

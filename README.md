@@ -226,6 +226,31 @@ var removeEvens = _.partial(i.filter, function (v) { return v % 2; });
 removeEvents([1, 2, 3]); // [1, 3]
 ```
 
+### chain(coll)
+
+Wrap a collection in a wrapper that allows calling icepick methods as chaining methods on the wrapper, similar to [`lodash.chain`](https://lodash.com/docs#chain).  This is convenient when you need to perform multiple operations on a collection at one time.  The result of calling each method is passed to the next method in the chain as the first argument.  To retrieve the result, call `wrapped.value()`. Unlike `lodash.chain`, you must always call `.value()` to get the result, the methods are not lazily evaluated, and intermediate collections are always created (but this may change in the future).
+
+```javascript
+var o = {
+  a: [1, 2, 3],
+  b: {c: 1},
+  d: 4
+};
+
+var result = i.chain(o)
+  .assocIn(["a", 2], 4)
+  .merge({b: {c: 2, c2: 3}})
+  .assoc("e", 2)
+  .dissoc("d")
+  .value();
+
+expect(result).to.eql({
+  a: [1, 2, 4],
+  b: {c: 2, c2: 3},
+  e: 2
+});
+```
+
 ## FAQ
 
 ### Why not just use Immutable.js or mori?
