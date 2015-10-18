@@ -212,7 +212,7 @@ exports.updateIn = function updateIn(coll, path, callback) {
   exports[methodName] = function (arr, val) {
     var newArr = arrayClone(arr);
 
-    newArr[methodName](val);
+    newArr[methodName](freezeIfNeeded(val));
 
     return _freeze(newArr);
   };
@@ -223,7 +223,7 @@ exports.updateIn = function updateIn(coll, path, callback) {
 // splice is special because it is variadic
 exports.splice = function splice(arr/*, args*/) {
   var newArr = arrayClone(arr),
-    args = rest(arguments);
+    args = rest(arguments).map(freezeIfNeeded);
 
   newArr.splice.apply(newArr, args);
 

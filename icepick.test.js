@@ -244,12 +244,30 @@ describe("icepick", function () {
       expect(Object.isFrozen(result)).to.be.ok();
     });
 
+    it("push (with object)", function () {
+      var a = i.freeze([1, 2]),
+        result = i.push(a, {b: 1});
+
+      expect(result).to.eql([1, 2, {b: 1}]);
+      expect(Object.isFrozen(result)).to.be.ok();
+      expect(Object.isFrozen(result[2])).to.be.ok();
+    });
+
     it("unshift", function () {
       var a = i.freeze([1, 2]),
         result = i.unshift(a, 3);
 
       expect(result).to.eql([3, 1, 2]);
       expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("unshift (with object)", function () {
+      var a = i.freeze([1, 2]),
+        result = i.unshift(a, [0]);
+
+      expect(result).to.eql([[0], 1, 2]);
+      expect(Object.isFrozen(result)).to.be.ok();
+      expect(Object.isFrozen(result[0])).to.be.ok();
     });
 
     it("pop", function () {
@@ -290,6 +308,16 @@ describe("icepick", function () {
 
       expect(result).to.eql([1, 4, 3]);
       expect(Object.isFrozen(result)).to.be.ok();
+    });
+
+    it("splice (with object)", function () {
+      var a = i.freeze([1, 2, 3]),
+        result = i.splice(a, 1, 1, {b:1}, {b: 2});
+
+      expect(result).to.eql([1, {b: 1}, {b: 2}, 3]);
+      expect(Object.isFrozen(result)).to.be.ok();
+      expect(Object.isFrozen(result[1])).to.be.ok();
+      expect(Object.isFrozen(result[2])).to.be.ok();
     });
 
     it("slice", function () {
