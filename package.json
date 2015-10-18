@@ -1,6 +1,6 @@
 {
   "name": "icepick",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Utilities for treating frozen JavaScript objects as persistent immutable collections.",
   "main": "icepick.js",
   "scripts": {
