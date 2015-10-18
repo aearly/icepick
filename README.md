@@ -1,22 +1,50 @@
 # icepick [![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick) [![Coverage Status](https://coveralls.io/repos/aearly/icepick/badge.svg?branch=)](https://coveralls.io/r/aearly/icepick?branch=)
 
-Utilities for working with frozen objects
+Utilities for treating frozen JavaScript objects as persistent immutable collections. 
 
 ## Motivation
 
-`Object.freeze()` is a quick and easy way to get immutable collections in plain Javascript.  If you recursively freeze an object hierarchy, you have a nice structure you can pass around without fear of mutation.  The problem is that if you want to modify properties inside this hierarchical collection, you have to return a new copy with the properties changed.
+`Object.freeze()` is a quick and easy way to get immutable collections in plain JavaScript.  If you recursively freeze an object hierarchy, you have a nice structure you can pass around without fear of mutation.  The problem is that if you want to modify properties inside this hierarchical collection, you have to return a new copy with the properties changed.
 
 A quick and dirty way to do this is to just `_.cloneDeep()` or `JSON.parse(JSON.stringify())` your object, set the new properties, and re-freeze, but this operation is expensive, especially if you are only changing a single property in a large structure.  It also means that all the branches that did not have an update will be new objects.
 
-Instead, what `icepick` does is provide functions that allow you to "modify" a frozen structure by returning a partial clone.  Only collections in the structure that had a child change will be changed.  This is very similar to how Clojure's persistent data structures work, albeit more primitive.
+Instead, what `icepick` does is provide functions that allow you to "modify" a frozen structure by returning a partial clone using structural sharing.  Only collections in the structure that had a child change will be changed.  This is very similar to how Clojure's [persistent data structures](https://en.wikipedia.org/wiki/Persistent_data_structure) work, albeit more primitive.
 
-This is useful wherever you can avoid expensive computation if you can quickly detect if the source data has changed.  For example, `shouldComponentUpdate` in a React component.  If you are using a frozen hierarchical object to build a system of React components, you can be confident that a component doesn't need to update if its current `props` strictly equal the `nextProps`.
+`icepick` uses structural sharing at the object or array level. Unlike Clojure, `icepick` does not use [tries](https://en.wikipedia.org/wiki/Trie) to store objects or arrays, so updates will be less efficient.  This is to maintain JavaScript interoperability at all times. Also, for smaller collections, the overhead of creating and managing a trie structure is slower than simply cloning the entire collection.  However, using very large collections (e.g.collections with more than 1000 elements) with `icepick` could lead to performance problems.
+
+Structural sharing is useful wherever you can avoid expensive computation if you can quickly detect if the source data has changed.  For example, `shouldComponentUpdate` in a React component.  If you are using a frozen hierarchical object to build a system of React components, you can be confident that a component doesn't need to update if its current `props` strictly equal the `nextProps`.
 
 ## API
 
+* `freeze`
+* `thaw`
+* `assoc`
+* `set`
+* `dissoc`
+* `unset`
+* `assocIn`
+* `setIn`
+* `getIn`
+* `updateIn`
+* `push`
+* `unshift`
+* `pop`
+* `shift`
+* `reverse`
+* `sort`
+* `splice`
+* `slice`
+* `map`
+* `filter`
+* `assign`
+* `extend`
+* `merge`
+* `chain`
+
+
 ### Usage
 
-`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it or wrap it with `browserify icepick.js --standalone icepick`.
+`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it, or wrap it with `browserify icepick.js --standalone icepick`.
 
 ```bash
 $ npm install icepick --save
@@ -223,12 +251,20 @@ i.map(function (v) {return v * 2}, [1, 2, 3]); // [2, 4, 6]
 
 var removeEvens = _.partial(i.filter, function (v) { return v % 2; });
 
-removeEvents([1, 2, 3]); // [1, 3]
+removeEvens([1, 2, 3]); // [1, 3]
+```
+
+Array methods like `find` or `indexOf` are not added to `icepick`, because you can just use them directly on the array:
+
+```js
+var arr = i.freeze([{a: 1}, {b: 2}]);
+
+arr.find(function (item) { return item.b != null; }); // {b: 2} 
 ```
 
 ### chain(coll)
 
-Wrap a collection in a wrapper that allows calling icepick methods as chaining methods on the wrapper, similar to [`lodash.chain`](https://lodash.com/docs#chain).  This is convenient when you need to perform multiple operations on a collection at one time.  The result of calling each method is passed to the next method in the chain as the first argument.  To retrieve the result, call `wrapped.value()`. Unlike `lodash.chain`, you must always call `.value()` to get the result, the methods are not lazily evaluated, and intermediate collections are always created (but this may change in the future).
+Wrap a collection in a wrapper that allows calling icepick function as chainable methods, similar to [`lodash.chain`](https://lodash.com/docs#chain).  This is convenient when you need to perform multiple operations on a collection at one time.  The result of calling each method is passed to the next method in the chain as the first argument.  To retrieve the result, call `wrapped.value()`. Unlike `lodash.chain`, you must always call `.value()` to get the result, the methods are not lazily evaluated, and intermediate collections are always created (but this may change in the future).
 
 ```javascript
 var o = {

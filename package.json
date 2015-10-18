@@ -1,7 +1,7 @@
 {
   "name": "icepick",
   "version": "0.5.0",
-  "description": "Utilities for working with frozen objects",
+  "description": "Utilities for treating frozen JavaScript objects as persistent immutable collections.",
   "main": "icepick.js",
   "scripts": {
     "test": "make ci",
@@ -16,7 +16,11 @@
     "freeze",
     "frozen",
     "immutable",
+    "persistent",
     "collections",
+    "structural",
+    "sharing",
+    "update",
     "mori",
     "clojure"
   ],
