@@ -143,6 +143,7 @@ exports.assoc = function assoc(coll, key, value) {
   return _freeze(newObj);
 
 };
+exports.set = exports.assoc;
 
 /**
  * un-set a value on an object or array
@@ -157,6 +158,7 @@ exports.dissoc = function dissoc(coll, key) {
 
   return _freeze(newObj);
 };
+exports.unset = exports.dissoc;
 
 /**
  * set a value deep in a hierarchical structure
@@ -176,6 +178,7 @@ exports.assocIn = function assocIn(coll, path, value) {
     return i.assoc(coll, key0, assocIn(coll[key0] || {}, path.slice(1), value));
   }
 };
+exports.setIn = exports.assocIn;
 
 /**
  * get an object from a hierachy based on an array of keys

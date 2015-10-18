@@ -118,6 +118,10 @@ describe("icepick", function () {
 
       expect(result.c).to.equal(o.c);
     });
+
+    it("should be aliased as set", function () {
+      expect(i.set).to.equal(i.assoc);
+    });
   });
 
   describe("dissoc", function () {
@@ -133,6 +137,10 @@ describe("icepick", function () {
         result = i.dissoc(a, 1);
 
       expect(result).to.eql([1, , 3]);
+    });
+
+    it("should be aliased as unset", function () {
+      expect(i.unset).to.equal(i.dissoc);
     });
   });
 
@@ -170,6 +178,10 @@ describe("icepick", function () {
     it("should create collections if they don't exist", function () {
       var result = i.assocIn({}, ["a", "b", "c"], 1);
       expect(result).to.eql({a: {b: {c: 1}}});
+    });
+
+    it("should be aliased as setIn", function () {
+      expect(i.setIn).to.equal(i.assocIn);
     });
   });
 

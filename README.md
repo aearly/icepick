@@ -72,6 +72,8 @@ assert(thawed.e === coll.e);
 
 ### assoc(collection, key, value)
 
+*alias: `set`*
+
 Set a value in a collection.  If `value` is a collection, it will be recursively frozen (if not already).  In the case that the collection is an Array, the key is the array index.
 
 ```javascript
@@ -88,6 +90,8 @@ var newArr = i.assoc(arr, 2, "d"); // ["a", "b", "d"]
 
 ### dissoc(collection, key)
 
+*alias: `unset`*
+
 The opposite of `assoc`.  Remove the value with the `key` from the collection.  If used on an array, it will create a sparse array.
 
 ```javascript
@@ -102,6 +106,8 @@ var newArr = i.dissoc(arr, 2); // ["a", , "c"]
 
 
 ### assocIn(collection, path, value)
+
+*alias: `setIn`*
 
 Set a value inside a hierarchical collection.  `path` is an array of keys inside the object.  Returns a partial copy of the original collection. Intermediate objects will be created if they don't exist.
 
