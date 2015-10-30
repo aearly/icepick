@@ -524,6 +524,8 @@ describe("production mode", function () {
 
 describe("internals", function () {
   describe("_weCareAbout", function () {
+    function Foo() {}
+
     it("should care about objects", function () {
       expect(i._weCareAbout({})).to.equal(true);
     });
@@ -537,7 +539,18 @@ describe("internals", function () {
       expect(i._weCareAbout(null)).to.equal(false);
     });
     it("should not care about undefined", function () {
-      expect(i._weCareAbout(null)).to.equal(false);
+      expect(i._weCareAbout(undefined)).to.equal(false);
+    });
+    it("should not care about class instances", function () {
+      expect(i._weCareAbout(new Foo())).to.equal(false);
+    });
+    it("should not care about object created with Object.create()", function () {
+      expect(i._weCareAbout(Object.create(Foo.prototype))).to.equal(false);
+    });
+    it("should not care about object created with Object.create({})", function () {
+      expect(i._weCareAbout(Object.create({
+        foo: function () {}
+      }))).to.equal(false);
     });
   });
 

@@ -17,14 +17,16 @@ function weCareAbout(val) {
   return null !== val &&
     (Array.isArray(val) ||
       // This will skip objects created with `new Foo()`
-      // but not objects created with `Object.create(proto)`
-      // The benefit is ignoring DOM elements, which are often
-      // circular.
+      // and objects created with `Object.create(proto)`
+      // The benefit is ignoring DOM elements and event emitters,
+      // which are often circular.
       isObjectLike(val));
 }
 
 function isObjectLike(val) {
-  return typeof val === "object" && val.constructor === Object;
+  return typeof val === "object" &&
+    val.constructor === Object &&
+    Object.getPrototypeOf(val) === Object.prototype;
 }
 
 

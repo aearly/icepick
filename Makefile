@@ -19,7 +19,7 @@ lint: setup
 
 # Dev mode for continuous testing
 dev:
-	mocha --watch icepick.test.js
+	mocha --watch icepick.test.js --growl
 
 # Alias for dev. Uses the testem watcher.
 watch: dev
