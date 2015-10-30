@@ -544,10 +544,12 @@ describe("internals", function () {
     it("should not care about class instances", function () {
       expect(i._weCareAbout(new Foo())).to.equal(false);
     });
-    it("should not care about object created with Object.create()", function () {
+    it("should not care about objects created with Object.create()",
+    function () {
       expect(i._weCareAbout(Object.create(Foo.prototype))).to.equal(false);
     });
-    it("should not care about object created with Object.create({})", function () {
+    it("should not care about objects created with Object.create({})",
+    function () {
       expect(i._weCareAbout(Object.create({
         foo: function () {}
       }))).to.equal(false);
