@@ -205,8 +205,8 @@ assert(obj1 !== result); // true
 Deeply merge a `source` object into `target`, similar to Lodash.merge.  Child collections that are both frozen and reference equal will be asusmed to be deeply equal.  Arrays from the `source` object will completely replace those in the `target` object if the two differ.  If nothing changed, the original reference will not change.  Returns a frozen object, and works with both unfrozen and frozen objects.
 
 ```javascript
-var defaults = {a: 1, c: {d: 1, e: [1, 2, 3], f: {g: 1}};
-var obj = {c: {d: 2, e: [2], f: null};
+var defaults = {a: 1, c: {d: 1, e: [1, 2, 3], f: {g: 1}}};
+var obj = {c: {d: 2, e: [2], f: null}};
 
 var result1 = i.merge(defaults, obj); // {a: 1, c: {d: 2, e: [2]}, f: null}
 
