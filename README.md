@@ -1,6 +1,6 @@
 # icepick [![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick) [![Coverage Status](https://coveralls.io/repos/aearly/icepick/badge.svg?branch=)](https://coveralls.io/r/aearly/icepick?branch=)
 
-Utilities for treating frozen JavaScript objects as persistent immutable collections. 
+Utilities for treating frozen JavaScript objects as persistent immutable collections.
 
 ## Motivation
 
@@ -22,6 +22,7 @@ Structural sharing is useful wherever you can avoid expensive computation if you
 * `set`
 * `dissoc`
 * `unset`
+* `update`
 * `assocIn`
 * `setIn`
 * `getIn`
@@ -130,6 +131,19 @@ var newColl = i.dissoc(coll, "b"); // {a: 1, c: 3}
 var arr = ["a", "b", "c"];
 
 var newArr = i.dissoc(arr, 2); // ["a", , "c"]
+```
+
+
+### update(collection, callback)
+
+Update a collection.  The collection will be passed to the `callback` function, and `callback` should return the new value.  If the value does not exist, `undefined` will be passed.
+
+```javascript
+var coll = i.freeze([1, 2]);
+
+var newColl = i.update(coll, function (a) {
+  return [0].concat(a);
+}); // [ 0, 1, 2 ]
 ```
 
 
@@ -259,7 +273,7 @@ Array methods like `find` or `indexOf` are not added to `icepick`, because you c
 ```js
 var arr = i.freeze([{a: 1}, {b: 2}]);
 
-arr.find(function (item) { return item.b != null; }); // {b: 2} 
+arr.find(function (item) { return item.b != null; }); // {b: 2}
 ```
 
 ### chain(coll)

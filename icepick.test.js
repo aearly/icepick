@@ -146,12 +146,12 @@ describe("icepick", function () {
 
   describe("update", function () {
     it("should work", function () {
-      var o = i.freeze({a: 1, b: 2, c: 3}),
-        result = i.update(o, function (obj) {
-          return {a: obj["a"] * 1, b: obj["b"] * 2, c: obj["c"] * 3};
+      var a = i.freeze([1, 2]),
+        result = i.update(a, function (arr) {
+          return [0].concat(arr);
         });
 
-      expect(result).to.eql({a: 1, b: 4, c: 9});
+      expect(result).to.eql([0, 1, 2]);
     });
   });
 
