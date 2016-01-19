@@ -144,6 +144,17 @@ describe("icepick", function () {
     });
   });
 
+  describe("update", function () {
+    it("should work", function () {
+      var o = i.freeze({a: 1, b: 2, c: 3}),
+        result = i.update(o, function (obj) {
+          return {a: obj["a"] * 1, b: obj["b"] * 2, c: obj["c"] * 3};
+        });
+
+      expect(result).to.eql({a: 1, b: 4, c: 9});
+    });
+  });
+
   describe("assocIn", function () {
     it("should work recursively", function () {
       var o = i.freeze({a: 1, b: 2, c: {a: 4}}),
