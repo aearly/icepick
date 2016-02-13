@@ -432,6 +432,24 @@ describe("icepick", function () {
       expect(i.merge(undefined, {})).to.eql(undefined);
     });
 
+    describe("custom associator", function () {
+      it("should use the custom associator", function () {
+        var o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1});
+        var o2 = i.freeze({a: 2, b: {c: [2]}});
+
+        function resolver(targetVal, sourceVal) {
+          if (Array.isArray(targetVal)) {
+            return targetVal.concat(sourceVal);
+          } else {
+            return sourceVal;
+          }
+        }
+
+        var result = i.merge(o1, o2, resolver);
+        expect(result).to.eql({a: 2, b: {c: [1, 1, 2]}, d: 1});
+      });
+    });
+
   });
 
 });
