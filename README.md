@@ -223,7 +223,7 @@ var o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1});
 var o2 = i.freeze({a: 2, b: {c: [2]}});
 
 function resolver(targetVal, sourceVal, key) {
-  if (Array.isArray(targetVal)) {
+  if (Array.isArray(targetVal) && sourceVal) {
     return targetVal.concat(sourceVal);
   } else {
     return sourceVal;

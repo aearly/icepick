@@ -438,7 +438,7 @@ describe("icepick", function () {
         var o2 = i.freeze({a: 2, b: {c: [2]}});
 
         function resolver(targetVal, sourceVal) {
-          if (Array.isArray(targetVal)) {
+          if (Array.isArray(targetVal) && sourceVal) {
             return targetVal.concat(sourceVal);
           } else {
             return sourceVal;
