@@ -290,11 +290,8 @@ function merge(target, source, resolver) {
         return i.assoc(obj, key, resolvedSourceVal);
       }
       // recursively merge pairs of objects
-      return assocIfDifferent(
-        obj, key,
-        merge(targetVal, resolvedSourceVal, resolver),
-        i.assoc
-      );
+      return assocIfDifferent(obj, key,
+        merge(targetVal, resolvedSourceVal, resolver));
     }
 
     // primitive values, stuff with prototypes
