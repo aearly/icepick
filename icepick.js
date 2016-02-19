@@ -265,7 +265,7 @@ function singleAssign(obj1, obj2) {
 }
 
 exports.merge = merge;
-function merge(target, source) {
+function merge(target, source, resolver) {
   if (target == null || source == null) {
     return target;
   }
@@ -273,24 +273,29 @@ function merge(target, source) {
     var sourceVal = source[key];
     var targetVal = obj[key];
 
+    var resolvedSourceVal =
+      resolver ? resolver(targetVal, sourceVal, key) : sourceVal;
+
     if (weCareAbout(sourceVal) && weCareAbout(targetVal)) {
       // if they are both frozen and reference equal, assume they are deep equal
       if ((
-            (Object.isFrozen(sourceVal) && Object.isFrozen(targetVal)) ||
+            (Object.isFrozen(resolvedSourceVal) &&
+              Object.isFrozen(targetVal)) ||
             process.env.NODE_ENV === "production"
           ) &&
-          sourceVal === targetVal) {
+          resolvedSourceVal === targetVal) {
         return obj;
       }
       if (Array.isArray(sourceVal)) {
-        return i.assoc(obj, key, sourceVal);
+        return i.assoc(obj, key, resolvedSourceVal);
       }
       // recursively merge pairs of objects
-      return assocIfDifferent(obj, key, merge(targetVal, sourceVal));
+      return assocIfDifferent(obj, key,
+        merge(targetVal, resolvedSourceVal, resolver));
     }
 
     // primitive values, stuff with prototypes
-    return assocIfDifferent(obj, key, sourceVal);
+    return assocIfDifferent(obj, key, resolvedSourceVal);
   }, target);
 }
 

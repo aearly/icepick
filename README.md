@@ -1,6 +1,6 @@
 # icepick [![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick) [![Coverage Status](https://coveralls.io/repos/aearly/icepick/badge.svg?branch=)](https://coveralls.io/r/aearly/icepick?branch=)
 
-Utilities for treating frozen JavaScript objects as persistent immutable collections. 
+Utilities for treating frozen JavaScript objects as persistent immutable collections.
 
 ## Motivation
 
@@ -200,7 +200,7 @@ var result = i.assign(obj1, obj2); // {a: 1, b: 2, c: 4, d: 5}
 assert(obj1 !== result); // true
 ```
 
-### merge(target, source)
+### merge(target, source, [associator])
 
 Deeply merge a `source` object into `target`, similar to Lodash.merge.  Child collections that are both frozen and reference equal will be assumed to be deeply equal.  Arrays from the `source` object will completely replace those in the `target` object if the two differ.  If nothing changed, the original reference will not change.  Returns a frozen object, and works with both unfrozen and frozen objects.
 
@@ -216,6 +216,24 @@ var result2 = i.merge(result1, obj2);
 assert(result1 === result2); // true
 
 ```
+
+An optional `resolver` function can be given as the third argument to change the way values are merged. For example, if you'd prefer that Array values from source be concatenated to target (instead of the source Array just replacing the target Array):
+
+var o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1});
+var o2 = i.freeze({a: 2, b: {c: [2]}});
+
+function resolver(targetVal, sourceVal, key) {
+  if (Array.isArray(targetVal) && sourceVal) {
+    return targetVal.concat(sourceVal);
+  } else {
+    return sourceVal;
+  }
+}
+
+var result3 = i.merge(o1, o2, resolver);
+assert(result === {a: 2, b: {c: [1, 1, 2]}, d: 1});
+
+The `resolver` function receives three arguments: the value from the target object, the value from the source object, and the key of the value being merged.
 
 ### Array.prototype methods
 
@@ -259,7 +277,7 @@ Array methods like `find` or `indexOf` are not added to `icepick`, because you c
 ```js
 var arr = i.freeze([{a: 1}, {b: 2}]);
 
-arr.find(function (item) { return item.b != null; }); // {b: 2} 
+arr.find(function (item) { return item.b != null; }); // {b: 2}
 ```
 
 ### chain(coll)
