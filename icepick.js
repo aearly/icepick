@@ -136,6 +136,10 @@ exports.thaw = function thaw(coll) {
  * @return {Object|Array}        new object hierarchy with modifications
  */
 exports.assoc = function assoc(coll, key, value) {
+  if (coll[key] === value) {
+    return _freeze(coll);
+  }
+
   var newObj = clone(coll);
 
   newObj[key] = freezeIfNeeded(value);
@@ -252,15 +256,14 @@ exports.slice = function slice(arr, arg1, arg2) {
 
 exports.extend =
 exports.assign = function assign(/*...objs*/) {
-  var newObj = _slice(arguments).reduce(singleAssign, {});
+  var newObj = rest(arguments).reduce(singleAssign, arguments[0]);
 
   return _freeze(newObj);
 };
 
 function singleAssign(obj1, obj2) {
   return Object.keys(obj2).reduce(function (obj, key) {
-    obj[key] = freezeIfNeeded(obj2[key]);
-    return obj;
+    return i.assoc(obj, key, obj2[key]);
   }, obj1);
 }
 
