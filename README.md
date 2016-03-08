@@ -219,6 +219,7 @@ assert(result1 === result2); // true
 
 An optional `resolver` function can be given as the third argument to change the way values are merged. For example, if you'd prefer that Array values from source be concatenated to target (instead of the source Array just replacing the target Array):
 
+```javascript
 var o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1});
 var o2 = i.freeze({a: 2, b: {c: [2]}});
 
@@ -232,6 +233,7 @@ function resolver(targetVal, sourceVal, key) {
 
 var result3 = i.merge(o1, o2, resolver);
 assert(result === {a: 2, b: {c: [1, 1, 2]}, d: 1});
+```
 
 The `resolver` function receives three arguments: the value from the target object, the value from the source object, and the key of the value being merged.
 
