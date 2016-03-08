@@ -79,7 +79,11 @@ function _freeze(coll) {
   if (process.env.NODE_ENV === "production") {
     return coll;
   }
-  return Object.freeze(coll);
+  if (typeof coll === "object") {
+    return Object.freeze(coll);
+  } else {
+    return coll;
+  }
 }
 
 function baseFreeze(coll, prevNodes) {
