@@ -119,6 +119,12 @@ describe("icepick", function () {
       expect(result.c).to.equal(o.c);
     });
 
+    it("should keep references the same if nothing changes", function () {
+      var o = i.freeze({a: 1});
+      var result = i.assoc(o, "a", 1);
+      expect(result).to.equal(o);
+    });
+
     it("should be aliased as set", function () {
       expect(i.set).to.equal(i.assoc);
     });
@@ -183,6 +189,12 @@ describe("icepick", function () {
     it("should be aliased as setIn", function () {
       expect(i.setIn).to.equal(i.assocIn);
     });
+
+    it("should keep references the same if nothing changes", function () {
+      var o = i.freeze({a: {b: 1}});
+      var result = i.assocIn(o, ["a", "b"], 1);
+      expect(result).to.equal(o);
+    });
   });
 
   describe("getIn", function () {
@@ -244,6 +256,12 @@ describe("icepick", function () {
         return 1;
       });
       expect(result).to.eql({a: {"1": {c: 1}}});
+    });
+
+    it("should keep references the same if nothing changes", function () {
+      var o = i.freeze({a: 1});
+      var result = i.updateIn(o, ["a", "b"], function (v) { return v; });
+      expect(result).to.equal(o);
     });
   });
 
@@ -375,6 +393,11 @@ describe("icepick", function () {
       expect(result).to.eql({a: 1, b: 3, c: 4, d: 4});
     });
 
+    it("should keep references the same if nothing changes", function () {
+      var o = i.freeze({a: 1});
+      var result = i.assign(o, {a: 1});
+      expect(result).to.equal(o);
+    });
   });
 
   describe("merge", function () {
