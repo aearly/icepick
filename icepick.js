@@ -334,6 +334,10 @@ function rest(args) {
 var chainProto = {
   value: function value() {
     return this.val;
+  },
+  thru: function thru(fn) {
+    this.val = freezeIfNeeded(fn(this.val));
+    return this;
   }
 };
 

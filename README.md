@@ -307,6 +307,17 @@ expect(result).to.eql({
 });
 ```
 
+The wrapper also contains an additional `thru` method for performing arbitrary updates on the current wrapped value.
+
+```js
+var result = i.chain([1, 2])
+  .push(3)
+  .thru(function (val) {
+    return [0].concat(val)
+  })
+  .value(); // [0, 1, 2, 3]
+```
+
 ## FAQ
 
 ### Why not just use Immutable.js or mori?

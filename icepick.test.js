@@ -529,6 +529,18 @@ describe("chain", function () {
     expect(Object.isFrozen(result)).to.be.ok();
   });
 
+  it("should have a thru method", function () {
+    var o = [1, 2];
+    var result = i.chain(o)
+      .push(3)
+      .thru(function (val) {
+        return [0].concat(val);
+      })
+      .value();
+    expect(Object.isFrozen(result)).to.be.ok();
+    expect(result).to.eql([0, 1, 2, 3]);
+  });
+
 });
 
 
