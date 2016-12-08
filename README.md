@@ -190,7 +190,7 @@ var newColl = i.updateIn(coll, [1, "b"], function (val) {
 
 *alias: extend*
 
-Similar to `Object.assign`, this function shallowly merges several objects together, always returning a new, immutable object.  Properties of the objects that are Objects or Arrays are deeply frozen.
+Similar to `Object.assign`, this function shallowly merges several objects together.  Properties of the objects that are Objects or Arrays are deeply frozen.
 
 ```javascript
 var obj1 = {a: 1, b: 2, c: 3};
