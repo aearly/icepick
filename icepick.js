@@ -42,17 +42,21 @@ function arrayClone(arr) {
 }
 
 function objClone(obj) {
+  return Object.create(
+      Object.getPrototypeOf(obj),
+      makeDescriptorsWritable(Object.getOwnPropertyDescriptors(obj))
+  );
+}
+
+function makeDescriptorsWritable(descriptors) {
   var index = 0,
-    keys = Object.keys(obj),
-    length = keys.length,
-    key,
-    result = {};
+      keys = Object.keys(descriptors),
+      length = keys.length;
 
   for (; index < length; index += 1) {
-    key = keys[index];
-    result[key] = obj[key];
+    descriptors[keys[index]].writable = true;
   }
-  return result;
+  return descriptors;
 }
 
 function clone(coll) {
