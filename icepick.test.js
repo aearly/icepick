@@ -3,8 +3,13 @@ var
   expect = require("expect.js"),
   i = require("../icepick");
 
-if (typeof Symbol !== "undefined") {
+try {
   require("./icepick.test.es6")();
+} catch (e) {
+  console.log(e.code);
+  if (!(e instanceof SyntaxError)) {
+    throw e;
+  }
 }
 
 describe("icepick", function () {
