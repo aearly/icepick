@@ -3,6 +3,10 @@ var
   expect = require("expect.js"),
   i = require("../icepick");
 
+if (typeof Symbol !== "undefined") {
+  require("./icepick.test.es6")();
+}
+
 describe("icepick", function () {
   "use strict";
 
