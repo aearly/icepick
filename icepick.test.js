@@ -6,7 +6,6 @@ var
 try {
   require("./icepick.test.es6")();
 } catch (e) {
-  console.log(e.code);
   if (!(e instanceof SyntaxError)) {
     throw e;
   }
