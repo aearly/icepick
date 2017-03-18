@@ -3,6 +3,14 @@ var
   expect = require("expect.js"),
   i = require("../icepick");
 
+try {
+  require("./icepick.test.es6")();
+} catch (e) {
+  if (!(e instanceof SyntaxError)) {
+    throw e;
+  }
+}
+
 describe("icepick", function () {
   "use strict";
 

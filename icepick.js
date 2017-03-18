@@ -41,9 +41,22 @@ function arrayClone(arr) {
   return result;
 }
 
+function getOwnPropertySymbolsStub() {
+  return [];
+}
+
+var getSymbols = Object.getOwnPropertySymbols || getOwnPropertySymbolsStub;
+
+function keysAndSymbols(obj) {
+  var symbols = getSymbols(obj),
+    keys = Object.keys(obj);
+
+  return keys.concat(symbols);
+}
+
 function objClone(obj) {
   var index = 0,
-    keys = Object.keys(obj),
+    keys = keysAndSymbols(obj),
     length = keys.length,
     key,
     result = {};
@@ -93,7 +106,7 @@ function baseFreeze(coll, prevNodes) {
 
   Object.freeze(coll);
   prevNodes.push(coll);
-  Object.keys(coll).forEach(function (key) {
+  keysAndSymbols(coll).forEach(function (key) {
     var prop = coll[key];
     if (weCareAbout(prop)) {
       baseFreeze(prop, prevNodes);
@@ -124,7 +137,7 @@ exports.freeze = function freeze(coll) {
 exports.thaw = function thaw(coll) {
   if (weCareAbout(coll) && Object.isFrozen(coll)) {
     var newColl = clone(coll);
-    Object.keys(newColl).forEach(function (key) {
+    keysAndSymbols(newColl).forEach(function (key) {
       newColl[key] = thaw(newColl[key]);
     });
     return newColl;
@@ -266,7 +279,7 @@ exports.assign = function assign(/*...objs*/) {
 };
 
 function singleAssign(obj1, obj2) {
-  return Object.keys(obj2).reduce(function (obj, key) {
+  return keysAndSymbols(obj2).reduce(function (obj, key) {
     return i.assoc(obj, key, obj2[key]);
   }, obj1);
 }
@@ -276,7 +289,7 @@ function merge(target, source, resolver) {
   if (target == null || source == null) {
     return target;
   }
-  return Object.keys(source).reduce(function (obj, key) {
+  return keysAndSymbols(source).reduce(function (obj, key) {
     var sourceVal = source[key];
     var targetVal = obj[key];
 
@@ -341,7 +354,7 @@ var chainProto = {
   }
 };
 
-Object.keys(exports).forEach(function (methodName) {
+keysAndSymbols(exports).forEach(function (methodName) {
   chainProto[methodName] = function (/*...args*/) {
     var args = _slice(arguments);
     args.unshift(this.val);

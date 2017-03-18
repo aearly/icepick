@@ -1,8 +1,9 @@
 {
   "preset": "google",
   "validateQuoteMarks": "\"",
-  "validateJSDoc": {
-    "requireParamTypes": false
+  "jsDoc": {
+    "checkAnnotations": "jsdoc3",
+    "requireSpaceBeforeObjectValues": null
   },
   "disallowMultipleLineBreaks": null,
   "disallowMultipleVarDecl": null,
@@ -13,6 +14,9 @@
     "allowRegex": true
   },
   "disallowSpacesInAnonymousFunctionExpression": null,
+  "disallowSpacesInFunctionExpression": null,
+  "disallowSpacesInFunctionDeclaration": null,
+  "requireSpaceBeforeObjectValues": null,
   "requireSpaceAfterKeywords": [
     "if",
     "else",
