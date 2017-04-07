@@ -150,6 +150,17 @@ describe("icepick", function () {
     });
   });
 
+  describe("update", function () {
+    it("should work", function () {
+      var a = i.freeze([1, 2]),
+        result = i.update(a, function (arr) {
+          return [0].concat(arr);
+        });
+
+      expect(result).to.eql([0, 1, 2]);
+    });
+  });
+
   describe("assocIn", function () {
     it("should work recursively", function () {
       var o = i.freeze({a: 1, b: 2, c: {a: 4}}),

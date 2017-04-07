@@ -168,6 +168,10 @@ exports.dissoc = function dissoc(coll, key) {
 };
 exports.unset = exports.dissoc;
 
+exports.update = function update(coll, callback) {
+  return _freeze(callback(coll));
+};
+
 /**
  * set a value deep in a hierarchical structure
  * @param  {Object|Array} coll
