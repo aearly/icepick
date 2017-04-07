@@ -46,7 +46,7 @@ function objClone(obj) {
     keys = Object.keys(obj),
     length = keys.length,
     key,
-    result = {};
+    result = Object.create(Object.getPrototypeOf(obj));
 
   for (; index < length; index += 1) {
     key = keys[index];
