@@ -13,8 +13,7 @@ default: ci
 
 # Lints the code
 lint: setup
-	jshint --config .jshintrc $(wildcard icepick*.js Gruntfile.js)
-	jscs icepick*.js Gruntfile.js
+	standard
 
 
 # Dev mode for continuous testing
