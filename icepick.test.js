@@ -140,7 +140,11 @@ describe('icepick', function () {
       const a = i.freeze([1, 2, 3])
       const result = i.dissoc(a, 1)
 
-      expect(result).to.eql([1, , 3])
+      // expect(result).to.eql([1, , 3])
+      expect(Object.keys(result)).to.eql([0, 2])
+      expect(result[0]).to.equal(1)
+      expect(result[1]).to.equal(undefined)
+      expect(result[2]).to.equal(3)
     })
 
     it('should be aliased as unset', function () {
@@ -595,17 +599,6 @@ describe('internals', function () {
       expect(i._weCareAbout(Object.create({
         foo: function () {}
       }))).to.equal(false)
-    })
-  })
-
-  describe('_slice', function () {
-    it('should work', function () {
-      expect(i._slice([1, 2, 3], 2)).to.eql([3])
-      expect(i._slice([1, 2, 3], 1)).to.eql([2, 3])
-      expect(i._slice([1, 2, 3], 0)).to.eql([1, 2, 3])
-      expect(i._slice([1, 2, 3], 4)).to.eql([])
-      expect(i._slice([], 0)).to.eql([])
-      expect(i._slice([], 1)).to.eql([])
     })
   })
 })

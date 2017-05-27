@@ -10,7 +10,7 @@
 
 'use strict'
 
-var i = exports
+const i = exports
 
 // we only care about objects or arrays for now
 function weCareAbout (val) {
@@ -29,36 +29,11 @@ function isObjectLike (val) {
     Object.getPrototypeOf(val) === Object.prototype
 }
 
-function arrayClone (arr) {
-  var index = 0
-  const length = arr.length
-  const result = Array(length)
-
-  for (; index < length; index += 1) {
-    result[index] = arr[index]
-  }
-  return result
-}
-
-function objClone (obj) {
-  let index = 0
-  const keys = Object.keys(obj)
-  const length = keys.length
-  let key
-  const result = {}
-
-  for (; index < length; index += 1) {
-    key = keys[index]
-    result[key] = obj[key]
-  }
-  return result
-}
-
 function clone (coll) {
   if (Array.isArray(coll)) {
-    return arrayClone(coll)
+    return [...coll]
   } else {
-    return objClone(coll)
+    return Object.assign({}, coll)
   }
 }
 
@@ -86,14 +61,14 @@ function _freeze (coll) {
 }
 
 function baseFreeze (coll, prevNodes) {
-  if (prevNodes.some(function (node) { return node === coll })) {
+  if (prevNodes.some(node => node === coll)) {
     throw new Error('object has a reference cycle')
   }
 
   Object.freeze(coll)
   prevNodes.push(coll)
-  Object.keys(coll).forEach(function (key) {
-    var prop = coll[key]
+  Object.keys(coll).forEach((key) => {
+    const prop = coll[key]
     if (weCareAbout(prop)) {
       baseFreeze(prop, prevNodes)
     }
@@ -122,8 +97,8 @@ exports.freeze = function freeze (coll) {
  */
 exports.thaw = function thaw (coll) {
   if (weCareAbout(coll) && Object.isFrozen(coll)) {
-    var newColl = clone(coll)
-    Object.keys(newColl).forEach(function (key) {
+    const newColl = clone(coll)
+    Object.keys(newColl).forEach((key) => {
       newColl[key] = thaw(newColl[key])
     })
     return newColl
@@ -143,7 +118,7 @@ exports.assoc = function assoc (coll, key, value) {
     return _freeze(coll)
   }
 
-  var newObj = clone(coll)
+  const newObj = clone(coll)
 
   newObj[key] = freezeIfNeeded(value)
 
@@ -158,7 +133,7 @@ exports.set = exports.assoc
  * @return {Object|Array}       New object or array
  */
 exports.dissoc = function dissoc (coll, key) {
-  var newObj = clone(coll)
+  const newObj = clone(coll)
 
   delete newObj[key]
 
@@ -174,7 +149,7 @@ exports.unset = exports.dissoc
  * @return {Object|Array}       new object hierarchy with modifications
  */
 exports.assocIn = function assocIn (coll, path, value) {
-  var key0 = path[0]
+  const key0 = path[0]
   if (path.length === 1) {
     // simplest case is a 1-element array.  Just a simple assoc.
     return i.assoc(coll, key0, value)
@@ -193,7 +168,7 @@ exports.setIn = exports.assocIn
  * @return {Object}       value, or undefined
  */
 function baseGet (coll, path) {
-  return (path || []).reduce(function (curr, key) {
+  return (path || []).reduce((curr, key) => {
     if (!curr) { return }
     return curr[key]
   }, coll)
@@ -210,15 +185,15 @@ exports.getIn = baseGet
  * @return {Object|Array}      new object hierarchy with modifications
  */
 exports.updateIn = function updateIn (coll, path, callback) {
-  var existingVal = baseGet(coll, path)
+  const existingVal = baseGet(coll, path)
   return i.assocIn(coll, path, callback(existingVal))
 };
 
 // generate wrappers for the mutative array methods
 ['push', 'unshift', 'pop', 'shift', 'reverse', 'sort']
-.forEach(function (methodName) {
+.forEach((methodName) => {
   exports[methodName] = function (arr, val) {
-    var newArr = arrayClone(arr)
+    const newArr = [...arr]
 
     newArr[methodName](freezeIfNeeded(val))
 
@@ -229,9 +204,9 @@ exports.updateIn = function updateIn (coll, path, callback) {
 })
 
 // splice is special because it is variadic
-exports.splice = function splice (arr/*, args */) {
-  const newArr = arrayClone(arr)
-  const args = rest(arguments).map(freezeIfNeeded)
+exports.splice = function splice (arr, ..._args) {
+  const newArr = [...arr]
+  const args = _args.map(freezeIfNeeded)
 
   newArr.splice.apply(newArr, args)
 
@@ -240,14 +215,14 @@ exports.splice = function splice (arr/*, args */) {
 
 // slice is non-mutative
 exports.slice = function slice (arr, arg1, arg2) {
-  var newArr = arr.slice(arg1, arg2)
+  const newArr = arr.slice(arg1, arg2)
 
   return _freeze(newArr)
 };
 
-['map', 'filter'].forEach(function (methodName) {
+['map', 'filter'].forEach((methodName) => {
   exports[methodName] = function (fn, arr) {
-    var newArr = arr[methodName](fn)
+    const newArr = arr[methodName](fn)
 
     return _freeze(newArr)
   }
@@ -256,14 +231,14 @@ exports.slice = function slice (arr, arg1, arg2) {
 })
 
 exports.extend =
-exports.assign = function assign (/* ...objs */) {
-  var newObj = rest(arguments).reduce(singleAssign, arguments[0])
+exports.assign = function assign (obj, ...objs) {
+  const newObj = objs.reduce(singleAssign, obj)
 
   return _freeze(newObj)
 }
 
 function singleAssign (obj1, obj2) {
-  return Object.keys(obj2).reduce(function (obj, key) {
+  return Object.keys(obj2).reduce((obj, key) => {
     return i.assoc(obj, key, obj2[key])
   }, obj1)
 }
@@ -273,11 +248,11 @@ function merge (target, source, resolver) {
   if (target == null || source == null) {
     return target
   }
-  return Object.keys(source).reduce(function (obj, key) {
-    var sourceVal = source[key]
-    var targetVal = obj[key]
+  return Object.keys(source).reduce((obj, key) => {
+    const sourceVal = source[key]
+    const targetVal = obj[key]
 
-    var resolvedSourceVal =
+    const resolvedSourceVal =
       resolver ? resolver(targetVal, sourceVal, key) : sourceVal
 
     if (weCareAbout(sourceVal) && weCareAbout(targetVal)) {
@@ -310,23 +285,7 @@ function assocIfDifferent (target, key, value) {
   return i.assoc(target, key, value)
 }
 
-function _slice (array, start) {
-  var begin = start || 0
-  var len = array.length
-  len -= begin
-  len = len < 0 ? 0 : len
-  var result = new Array(len)
-  for (var i = 0; i < len; i += 1) {
-    result[i] = array[i + begin]
-  }
-  return result
-}
-
-function rest (args) {
-  return _slice(args, 1)
-}
-
-var chainProto = {
+const chainProto = {
   value: function value () {
     return this.val
   },
@@ -336,9 +295,8 @@ var chainProto = {
   }
 }
 
-Object.keys(exports).forEach(function (methodName) {
-  chainProto[methodName] = function (/* ...args */) {
-    var args = _slice(arguments)
+Object.keys(exports).forEach((methodName) => {
+  chainProto[methodName] = function (...args) {
     args.unshift(this.val)
     this.val = exports[methodName].apply(null, args)
     return this
@@ -346,11 +304,10 @@ Object.keys(exports).forEach(function (methodName) {
 })
 
 exports.chain = function chain (val) {
-  var wrapped = Object.create(chainProto)
+  const wrapped = Object.create(chainProto)
   wrapped.val = val
   return wrapped
 }
 
 // for testing
 exports._weCareAbout = weCareAbout
-exports._slice = _slice
