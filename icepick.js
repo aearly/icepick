@@ -13,23 +13,19 @@
 const i = exports
 
 // we only care about objects or arrays for now
-function weCareAbout (val) {
-  return val !== null &&
+const weCareAbout = val => val !== null &&
     (Array.isArray(val) ||
       // This will skip objects created with `new Foo()`
       // and objects created with `Object.create(proto)`
       // The benefit is ignoring DOM elements and event emitters,
       // which are often circular.
       isObjectLike(val))
-}
 
-function isObjectLike (val) {
-  return typeof val === 'object' &&
+const isObjectLike = val => typeof val === 'object' &&
     val.constructor === Object &&
     Object.getPrototypeOf(val) === Object.prototype
-}
 
-function clone (coll) {
+const clone = (coll) => {
   if (Array.isArray(coll)) {
     return [...coll]
   } else {
@@ -37,7 +33,7 @@ function clone (coll) {
   }
 }
 
-function freezeIfNeeded (coll) {
+const freezeIfNeeded = coll => {
   if (
       weCareAbout(coll) &&
       (
@@ -49,7 +45,7 @@ function freezeIfNeeded (coll) {
   return coll
 }
 
-function _freeze (coll) {
+const _freeze = coll => {
   if (process.env.NODE_ENV === 'production') {
     return coll
   }
@@ -60,7 +56,7 @@ function _freeze (coll) {
   }
 }
 
-function baseFreeze (coll, prevNodes) {
+const baseFreeze = (coll, prevNodes) => {
   if (prevNodes.some(node => node === coll)) {
     throw new Error('object has a reference cycle')
   }
