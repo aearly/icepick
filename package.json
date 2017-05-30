@@ -4,7 +4,8 @@
   "description": "Utilities for treating frozen JavaScript objects as persistent immutable collections.",
   "main": "icepick.js",
   "scripts": {
-    "test": "make ci",
+    "pretest": "standard",
+    "test": "mocha icepick.test.js",
     "coverage": "nyc npm test && nyc report",
     "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
   },

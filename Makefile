@@ -18,6 +18,9 @@ watch: dev
 test: setup
 	mocha icepick.test.js
 
+coverage:
+	nyc mocha icepick.test.js
+
 pre-commit: lint
 
 ci: lint test
