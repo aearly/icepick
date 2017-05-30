@@ -1,7 +1,6 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "0.12"
-  - "0.10"
+  - "6"
+  - "7"
 after_success: npm run coveralls
 sudo: false
