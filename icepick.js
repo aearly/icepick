@@ -93,9 +93,12 @@ exports.freeze = isProduction
  */
 exports.thaw = function thaw (coll) {
   if (weCareAbout(coll) && Object.isFrozen(coll)) {
-    const newColl = clone(coll)
-    Object.keys(newColl).forEach((key) => {
-      newColl[key] = thaw(newColl[key])
+    if (Array.isArray(coll)) {
+      return coll.map(thaw)
+    }
+    const newColl = {}
+    Object.keys(coll).forEach((key) => {
+      newColl[key] = thaw(coll[key])
     })
     return newColl
   }
