@@ -1,6 +1,6 @@
 /* global describe, it, before, after */
 const expect = require('expect.js')
-const i = require('../icepick')
+const i = require('./icepick')
 
 describe('icepick', function () {
   'use strict'
@@ -539,9 +539,12 @@ describe('chain', function () {
 
 describe('production mode', function () {
   let oldEnv
+  let i
   before(function () {
     oldEnv = process.env.NODE_ENV
     process.env.NODE_ENV = 'production'
+    delete require.cache[require.resolve('./icepick')]
+    i = require('./icepick')
   })
 
   after(function () {
