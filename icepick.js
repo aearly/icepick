@@ -12,6 +12,9 @@
 
 const i = exports
 
+const isProduction = process.env.NODE_ENV === 'production'
+const identity = coll => coll
+
 // we only care about objects or arrays for now
 const weCareAbout = val => val !== null &&
     (Array.isArray(val) ||
@@ -33,22 +36,18 @@ const clone = (coll) => {
   }
 }
 
-const freezeIfNeeded = coll => {
-  if (
-      weCareAbout(coll) &&
-      (
-        !Object.isFrozen(coll) &&
-        process.env.NODE_ENV !== 'production'
-      )) {
-    return baseFreeze(coll, [])
+const freezeIfNeeded = isProduction
+? identity
+: coll => {
+  if (weCareAbout(coll) && !Object.isFrozen(coll)) {
+    return baseFreeze(coll)
   }
   return coll
 }
 
-const _freeze = coll => {
-  if (process.env.NODE_ENV === 'production') {
-    return coll
-  }
+const _freeze = isProduction
+? identity
+: coll => {
   if (typeof coll === 'object') {
     return Object.freeze(coll)
   } else {
@@ -56,20 +55,22 @@ const _freeze = coll => {
   }
 }
 
-const baseFreeze = (coll, prevNodes) => {
-  if (prevNodes.some(node => node === coll)) {
+const prevNodes = new Set()
+
+const baseFreeze = (coll) => {
+  if (prevNodes.has(coll)) {
     throw new Error('object has a reference cycle')
   }
 
   Object.freeze(coll)
-  prevNodes.push(coll)
+  prevNodes.add(coll)
   Object.keys(coll).forEach((key) => {
     const prop = coll[key]
     if (weCareAbout(prop)) {
-      baseFreeze(prop, prevNodes)
+      baseFreeze(prop)
     }
   })
-  prevNodes.pop()
+  prevNodes.delete(coll)
 
   return coll
 }
@@ -79,11 +80,10 @@ const baseFreeze = (coll, prevNodes) => {
  * @param  {Object|Array} coll
  * @return {Object|Array}
  */
-exports.freeze = function freeze (coll) {
-  if (process.env.NODE_ENV === 'production') {
-    return coll
-  }
-  return baseFreeze(coll, [])
+exports.freeze = isProduction
+? identity
+: function freeze (coll) {
+  return baseFreeze(coll)
 }
 
 /**
@@ -253,12 +253,16 @@ function merge (target, source, resolver) {
 
     if (weCareAbout(sourceVal) && weCareAbout(targetVal)) {
       // if they are both frozen and reference equal, assume they are deep equal
-      if ((
-            (Object.isFrozen(resolvedSourceVal) &&
-              Object.isFrozen(targetVal)) ||
-            process.env.NODE_ENV === 'production'
-          ) &&
-          resolvedSourceVal === targetVal) {
+      if (
+        resolvedSourceVal === targetVal &&
+        (
+          isProduction ||
+          (
+            Object.isFrozen(resolvedSourceVal) &&
+            Object.isFrozen(targetVal)
+          )
+        )
+      ) {
         return obj
       }
       if (Array.isArray(sourceVal)) {
