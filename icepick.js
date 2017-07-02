@@ -28,11 +28,22 @@ const isObjectLike = val => typeof val === 'object' &&
     val.constructor === Object &&
     Object.getPrototypeOf(val) === Object.prototype
 
+const cloneObj = obj => {
+  const newObj = {}
+  const keys = Object.keys(obj)
+  let idx = keys.length
+  while (idx--) {
+    const key = keys[idx]
+    newObj[key] = obj[key]
+  }
+  return newObj
+}
+
 const clone = (coll) => {
   if (Array.isArray(coll)) {
-    return [...coll]
+    return coll.slice()
   } else {
-    return Object.assign({}, coll)
+    return cloneObj(coll)
   }
 }
 
