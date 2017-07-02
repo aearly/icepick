@@ -126,6 +126,7 @@ exports.thaw = function thaw (coll) {
   forKeys(coll, key => {
     newColl[key] = thaw(coll[key])
   })
+  return newColl
 }
 
 /**
