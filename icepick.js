@@ -28,12 +28,29 @@ const isObjectLike = val => typeof val === 'object' &&
     val.constructor === Object &&
     Object.getPrototypeOf(val) === Object.prototype
 
+const forKeys = (obj, iter) => {
+  let idx, keys
+  if (Array.isArray(obj)) {
+    idx = obj.length
+    while (idx--) {
+      iter(idx)
+    }
+    return
+  }
+  keys = Object.keys(obj)
+  idx = keys.length
+  while (idx--) {
+    iter(keys[idx])
+  }
+}
+
 const cloneObj = obj => {
   const newObj = {}
   const keys = Object.keys(obj)
   let idx = keys.length
+  let key
   while (idx--) {
-    const key = keys[idx]
+    key = keys[idx]
     newObj[key] = obj[key]
   }
   return newObj
@@ -66,23 +83,22 @@ const _freeze = isProduction
   }
 }
 
-const prevNodes = new Set()
+const prevNodes = []
 
 const baseFreeze = (coll) => {
-  if (prevNodes.has(coll)) {
+  if (prevNodes.some(val => val === coll)) {
     throw new Error('object has a reference cycle')
   }
-
-  Object.freeze(coll)
-  prevNodes.add(coll)
-  Object.keys(coll).forEach((key) => {
+  prevNodes.push(coll)
+  forKeys(coll, key => {
     const prop = coll[key]
     if (weCareAbout(prop)) {
       baseFreeze(prop)
     }
   })
-  prevNodes.delete(coll)
+  prevNodes.pop()
 
+  Object.freeze(coll)
   return coll
 }
 
@@ -93,9 +109,7 @@ const baseFreeze = (coll) => {
  */
 exports.freeze = isProduction
 ? identity
-: function freeze (coll) {
-  return baseFreeze(coll)
-}
+: baseFreeze
 
 /**
  * recursively un-freeze an object, by cloning frozen collections
@@ -103,14 +117,15 @@ exports.freeze = isProduction
  * @return {[type]}      [description]
  */
 exports.thaw = function thaw (coll) {
-  if (weCareAbout(coll) && Object.isFrozen(coll)) {
-    const newColl = clone(coll)
-    Object.keys(newColl).forEach((key) => {
-      newColl[key] = thaw(newColl[key])
-    })
-    return newColl
-  }
-  return coll
+  if (!weCareAbout(coll) || !Object.isFrozen(coll)) return coll
+
+  const newColl = Array.isArray(coll)
+    ? new Array(coll.length)
+    : {}
+
+  forKeys(coll, key => {
+    newColl[key] = thaw(coll[key])
+  })
 }
 
 /**
