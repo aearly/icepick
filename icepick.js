@@ -336,4 +336,7 @@ exports.chain = function chain (val) {
 }
 
 // for testing
-exports._weCareAbout = weCareAbout
+if (process.env.NODE_ENV !== 'development' &&
+  process.env.NODE_ENV !== 'production') {
+  exports._weCareAbout = weCareAbout
+}
