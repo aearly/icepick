@@ -12,7 +12,6 @@
 
 const i = exports
 
-const isProduction = process.env.NODE_ENV === 'production'
 const identity = coll => coll
 
 // we only care about objects or arrays for now
@@ -64,7 +63,7 @@ const clone = (coll) => {
   }
 }
 
-const freezeIfNeeded = isProduction
+const freezeIfNeeded = process.env.NODE_ENV === 'production'
 ? identity
 : coll => {
   if (weCareAbout(coll) && !Object.isFrozen(coll)) {
@@ -73,7 +72,7 @@ const freezeIfNeeded = isProduction
   return coll
 }
 
-const _freeze = isProduction
+const _freeze = process.env.NODE_ENV === 'production'
 ? identity
 : coll => {
   if (typeof coll === 'object') {
@@ -107,7 +106,7 @@ const baseFreeze = (coll) => {
  * @param  {Object|Array} coll
  * @return {Object|Array}
  */
-exports.freeze = isProduction
+exports.freeze = process.env.NODE_ENV === 'production'
 ? identity
 : baseFreeze
 
@@ -283,7 +282,7 @@ function merge (target, source, resolver) {
       if (
         resolvedSourceVal === targetVal &&
         (
-          isProduction ||
+          process.env.NODE_ENV === 'production' ||
           (
             Object.isFrozen(resolvedSourceVal) &&
             Object.isFrozen(targetVal)
