@@ -44,7 +44,7 @@ Structural sharing is useful wherever you can avoid expensive computation if you
 
 ### Usage
 
-`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, you will have to shim it, or wrap it with `browserify icepick.js --standalone icepick`.
+`icepick` is provided as a CommonJS module with no dependencies.  It is designed for use in Node, or with module loaders like Browserify or Webpack.  To use as a global or with require.js, use `icepick.min.js` or `icepick.dev.js` directly in a browser.
 
 ```bash
 $ npm install icepick --save
