@@ -1,3 +1,6 @@
+# v2.1.1
+- Fix readme display on npmjs.org
+
 # v2.1.0
 - Improved performance
 - Added `icepick.min.js` and `icepick.dev.js` for direct use in browsers
