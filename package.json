@@ -8,9 +8,7 @@
     "dist:dev": "browserify --standalone icepick icepick.js -g [ envify purge --NODE_ENV development ] | uglifyjs -mc > icepick.dev.js",
     "preversion": "npm run dist:prod && npm run dist:dev",
     "pretest": "standard icepick.js icepick.test.js",
-    "test": "mocha icepick.test.js",
-    "coverage": "nyc npm test && nyc report",
-    "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
+    "test": "tap icepick.test.js -R spec --100"
   },
   "repository": {
     "type": "git",
@@ -36,12 +34,9 @@
   "homepage": "https://github.com/aearly/icepick",
   "devDependencies": {
     "browserify": "^14.4.0",
-    "coveralls": "^2.13.1",
     "envify": "^4.1.0",
-    "expect.js": "~0.3.1",
-    "mocha": "^3.4.2",
-    "nyc": "^10.3.2",
     "standard": "^10.0.2",
+    "tap": "^10.7.0",
     "uglify-es": "^3.0.25"
   },
   "dependencies": {}

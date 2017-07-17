@@ -1,46 +1,52 @@
-/* global describe, it, before, after */
-const expect = require('expect.js')
 const i = require('./icepick')
+const tap = require('tap')
 
-describe('icepick', function () {
+function test (what, how) {
+  tap.test(what, assert => {
+    how(assert)
+    assert.end()
+  })
+}
+
+test('icepick', assert => {
   'use strict'
 
-  describe('freeze', function () {
-    it('should work', function () {
+  test('freeze', assert => {
+    test('should work', assert => {
       const a = i.freeze({asdf: 'foo', zxcv: {asdf: 'bar'}})
 
-      expect(a.asdf).to.equal('foo')
-      expect(Object.isFrozen(a)).to.equal(true)
+      assert.equal(a.asdf, 'foo')
+      assert.equal(Object.isFrozen(a), true)
 
-      expect(function () {
+      assert.throws(function () {
         a.asdf = 'bar'
-      }).to.throwError()
+      })
 
-      expect(function () {
+      assert.throws(function () {
         a.zxcv.asdf = 'qux'
-      }).to.throwError()
+      })
 
-      expect(function () {
+      assert.throws(function () {
         a.qwer = 'bar'
-      }).to.throwError()
+      })
     })
 
-    it('should not work with cyclical objects', function () {
+    test('should not work with cyclical objects', assert => {
       let a = {}
       a.a = a
 
-      expect(i.freeze).withArgs(a).to.throwError()
+      assert.throws(() => i.freeze(a))
 
       a = {b: {}}
       a.b.a = a
-      expect(i.freeze).withArgs(a).to.throwError()
+      assert.throws(() => i.freeze(a))
     })
   })
 
-  describe('thaw', function () {
+  test('thaw', assert => {
     function Foo () {}
 
-    it('should thaw objects', function () {
+    test('should thaw objects', assert => {
       const o = i.freeze({
         a: {},
         b: 1,
@@ -50,117 +56,117 @@ describe('icepick', function () {
 
       const thawed = i.thaw(o)
 
-      expect(thawed).to.eql(o)
-      expect(Object.isFrozen(thawed)).to.be(false)
-      expect(Object.isFrozen(thawed.a)).to.be(false)
-      expect(o.a).to.not.equal(thawed.a)
-      expect(o.d).to.not.equal(thawed.d)
-      expect(o.d[0]).to.not.equal(thawed.d[0])
-      expect(o.c).to.equal(thawed.c)
+      assert.same(thawed, o)
+      assert.equal(Object.isFrozen(thawed), false)
+      assert.equal(Object.isFrozen(thawed.a), false)
+      assert.notEqual(o.a, thawed.a)
+      assert.notEqual(o.d, thawed.d)
+      assert.notEqual(o.d[0], thawed.d[0])
+      assert.equal(o.c, thawed.c)
     })
   })
 
-  describe('assoc', function () {
-    it('should work with objects', function () {
+  test('assoc', assert => {
+    test('should work with objects', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       let result = i.assoc(o, 'b', 4)
 
-      expect(result).to.eql({a: 1, b: 4, c: 3})
+      assert.same(result, {a: 1, b: 4, c: 3})
 
       result = i.assoc(o, 'd', 4)
-      expect(result).to.eql({a: 1, b: 2, c: 3, d: 4})
+      assert.same(result, {a: 1, b: 2, c: 3, d: 4})
     })
 
-    it('should freeze objects you assoc', function () {
+    test('should freeze objects you assoc', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       const result = i.assoc(o, 'b', {d: 5})
 
-      expect(result).to.eql({a: 1, b: {d: 5}, c: 3})
+      assert.same(result, {a: 1, b: {d: 5}, c: 3})
 
-      expect(Object.isFrozen(result.b)).to.be.ok()
+      assert.ok(Object.isFrozen(result.b))
     })
 
-    it('should work with arrays', function () {
+    test('should work with arrays', assert => {
       const a = i.freeze([1, 2, 3])
       let result = i.assoc(a, 1, 4)
 
-      expect(result).to.eql([1, 4, 3])
+      assert.same(result, [1, 4, 3])
 
       result = i.assoc(a, '1', 4)
-      expect(result).to.eql([1, 4, 3])
+      assert.same(result, [1, 4, 3])
 
       result = i.assoc(a, 3, 4)
-      expect(result).to.eql([1, 2, 3, 4])
+      assert.same(result, [1, 2, 3, 4])
     })
 
-    it('should freeze arrays you assoc', function () {
+    test('should freeze arrays you assoc', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       const result = i.assoc(o, 'b', [1, 2])
 
-      expect(result).to.eql({a: 1, b: [1, 2], c: 3})
+      assert.same(result, {a: 1, b: [1, 2], c: 3})
 
-      expect(Object.isFrozen(result.b)).to.be.ok()
+      assert.ok(Object.isFrozen(result.b))
     })
 
-    it('should return a frozen copy', function () {
+    test('should return a frozen copy', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       const result = i.assoc(o, 'b', 4)
 
-      expect(result).to.not.equal(o)
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.notEqual(result, o)
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('should not modify child objects', function () {
+    test('should not modify child objects', assert => {
       const o = i.freeze({a: 1, b: 2, c: {a: 4}})
       const result = i.assoc(o, 'b', 4)
 
-      expect(result.c).to.equal(o.c)
+      assert.equal(result.c, o.c)
     })
 
-    it('should keep references the same if nothing changes', function () {
+    test('should keep references the same if nothing changes', assert => {
       const o = i.freeze({a: 1})
       const result = i.assoc(o, 'a', 1)
-      expect(result).to.equal(o)
+      assert.equal(result, o)
     })
 
-    it('should be aliased as set', function () {
-      expect(i.set).to.equal(i.assoc)
+    test('should be aliased as set', assert => {
+      assert.equal(i.set, i.assoc)
     })
   })
 
-  describe('dissoc', function () {
-    it('should work with objecs', function () {
+  test('dissoc', assert => {
+    test('should work with objecs', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       const result = i.dissoc(o, 'b')
 
-      expect(result).to.eql({a: 1, c: 3})
+      assert.same(result, {a: 1, c: 3})
     })
 
-    it('should work with arrays (poorly)', function () {
+    test('should work with arrays (poorly)', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.dissoc(a, 1)
 
-      // expect(result).to.eql([1, , 3])
-      expect(Object.keys(result)).to.eql([0, 2])
-      expect(result[0]).to.equal(1)
-      expect(result[1]).to.equal(undefined)
-      expect(result[2]).to.equal(3)
+      // assert.same(result, [1, , 3])
+      assert.same(Object.keys(result), [0, 2])
+      assert.equal(result[0], 1)
+      assert.equal(result[1], undefined)
+      assert.equal(result[2], 3)
     })
 
-    it('should be aliased as unset', function () {
-      expect(i.unset).to.equal(i.dissoc)
+    test('should be aliased as unset', assert => {
+      assert.equal(i.unset, i.dissoc)
     })
   })
 
-  describe('assocIn', function () {
-    it('should work recursively', function () {
+  test('assocIn', assert => {
+    test('should work recursively', assert => {
       const o = i.freeze({a: 1, b: 2, c: {a: 4}})
       const result = i.assocIn(o, ['c', 'a'], 5)
 
-      expect(result).to.eql({a: 1, b: 2, c: {a: 5}})
+      assert.same(result, {a: 1, b: 2, c: {a: 5}})
     })
 
-    it('should work recursively (deeper)', function () {
+    test('should work recursively (deeper)', assert => {
       const o = i.freeze({
         a: 1,
         b: {a: 2},
@@ -174,33 +180,33 @@ describe('icepick', function () {
       })
       const result = i.assocIn(o, ['c', 0, 'a'], 8)
 
-      expect(result.c[0].a).to.equal(8)
-      expect(result).to.not.equal(o)
-      expect(result.b).to.equal(o.b)
-      expect(result.c).to.not.equal(o.c)
-      expect(result.c[0]).to.not.equal(o.c[0])
-      expect(result.c[0].b).to.equal(o.c[0].b)
-      expect(result.c[1]).to.equal(o.c[1])
+      assert.equal(result.c[0].a, 8)
+      assert.notEqual(result, o)
+      assert.equal(result.b, o.b)
+      assert.notEqual(result.c, o.c)
+      assert.notEqual(result.c[0], o.c[0])
+      assert.equal(result.c[0].b, o.c[0].b)
+      assert.equal(result.c[1], o.c[1])
     })
 
-    it("should create collections if they don't exist", function () {
+    test("should create collections if they don't exist", assert => {
       const result = i.assocIn({}, ['a', 'b', 'c'], 1)
-      expect(result).to.eql({a: {b: {c: 1}}})
+      assert.same(result, {a: {b: {c: 1}}})
     })
 
-    it('should be aliased as setIn', function () {
-      expect(i.setIn).to.equal(i.assocIn)
+    test('should be aliased as setIn', assert => {
+      assert.equal(i.setIn, i.assocIn)
     })
 
-    it('should keep references the same if nothing changes', function () {
+    test('should keep references the same if nothing changes', assert => {
       const o = i.freeze({a: {b: 1}})
       const result = i.assocIn(o, ['a', 'b'], 1)
-      expect(result).to.equal(o)
+      assert.equal(result, o)
     })
   })
 
-  describe('getIn', function () {
-    it('should work', function () {
+  test('getIn', assert => {
+    test('should work', assert => {
       const o = i.freeze({
         a: 0,
         b: {a: 2},
@@ -209,16 +215,16 @@ describe('icepick', function () {
             {a: 4}
         ]
       })
-      expect(i.getIn(o, ['c', 0, 'b'])).to.equal(4)
-      expect(i.getIn(o, ['a'])).to.equal(0)
+      assert.equal(i.getIn(o, ['c', 0, 'b']), 4)
+      assert.equal(i.getIn(o, ['a']), 0)
     })
 
-    it('should work without a path', function () {
+    test('should work without a path', assert => {
       const o = i.freeze({a: {b: 1}})
-      expect(i.getIn(o)).to.equal(o)
+      assert.equal(i.getIn(o), o)
     })
 
-    it('should return undefined for a non-existant path', function () {
+    test('should return undefined for a non-existant path', assert => {
       const o = i.freeze({
         a: 1,
         b: {a: 2},
@@ -228,233 +234,233 @@ describe('icepick', function () {
         ]
       })
 
-      expect(i.getIn(o, ['q'])).to.equal(undefined)
-      expect(i.getIn(o, ['a', 's', 'd'])).to.equal(undefined)
+      assert.equal(i.getIn(o, ['q']), undefined)
+      assert.equal(i.getIn(o, ['a', 's', 'd']), undefined)
     })
 
-    it('should return undefined for a non-existant path (null)', function () {
+    test('should return undefined for a non-existant path (null)', assert => {
       const o = i.freeze({
         a: null
       })
 
-      expect(i.getIn(o, ['a', 'b'])).to.equal(undefined)
+      assert.equal(i.getIn(o, ['a', 'b']), undefined)
     })
   })
 
-  describe('updateIn', function () {
-    it('should work', function () {
+  test('updateIn', assert => {
+    test('should work', assert => {
       const o = i.freeze({a: 1, b: 2, c: {a: 4}})
       const result = i.updateIn(o, ['c', 'a'], function (num) {
         return num * 2
       })
 
-      expect(result).to.eql({a: 1, b: 2, c: {a: 8}})
+      assert.same(result, {a: 1, b: 2, c: {a: 8}})
     })
 
-    it("should create collections if they don't exist", function () {
+    test("should create collections if they don't exist", assert => {
       const result = i.updateIn({}, ['a', 1, 'c'], function (val) {
-        expect(val).to.be(undefined)
+        assert.equal(val, undefined)
         return 1
       })
-      expect(result).to.eql({a: {'1': {c: 1}}})
+      assert.same(result, {a: {'1': {c: 1}}})
     })
 
-    it('should keep references the same if nothing changes', function () {
+    test('should keep references the same if nothing changes', assert => {
       const o = i.freeze({a: 1})
       const result = i.updateIn(o, ['a', 'b'], function (v) { return v })
-      expect(result).to.equal(o)
+      assert.equal(result, o)
     })
   })
 
-  describe('Array methods', function () {
-    it('push', function () {
+  test('Array methods', assert => {
+    test('push', assert => {
       const a = i.freeze([1, 2])
       const result = i.push(a, 3)
 
-      expect(result).to.eql([1, 2, 3])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [1, 2, 3])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('push (with object)', function () {
+    test('push (with object)', assert => {
       const a = i.freeze([1, 2])
       const result = i.push(a, {b: 1})
 
-      expect(result).to.eql([1, 2, {b: 1}])
-      expect(Object.isFrozen(result)).to.be.ok()
-      expect(Object.isFrozen(result[2])).to.be.ok()
+      assert.same(result, [1, 2, {b: 1}])
+      assert.ok(Object.isFrozen(result))
+      assert.ok(Object.isFrozen(result[2]))
     })
 
-    it('unshift', function () {
+    test('unshift', assert => {
       const a = i.freeze([1, 2])
       const result = i.unshift(a, 3)
 
-      expect(result).to.eql([3, 1, 2])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [3, 1, 2])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('unshift (with object)', function () {
+    test('unshift (with object)', assert => {
       const a = i.freeze([1, 2])
       const result = i.unshift(a, [0])
 
-      expect(result).to.eql([[0], 1, 2])
-      expect(Object.isFrozen(result)).to.be.ok()
-      expect(Object.isFrozen(result[0])).to.be.ok()
+      assert.same(result, [[0], 1, 2])
+      assert.ok(Object.isFrozen(result))
+      assert.ok(Object.isFrozen(result[0]))
     })
 
-    it('pop', function () {
+    test('pop', assert => {
       const a = i.freeze([1, 2])
       const result = i.pop(a)
 
-      expect(result).to.eql([1])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [1])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('shift', function () {
+    test('shift', assert => {
       const a = i.freeze([1, 2])
       const result = i.shift(a)
 
-      expect(result).to.eql([2])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [2])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('reverse', function () {
+    test('reverse', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.reverse(a)
 
-      expect(result).to.eql([3, 2, 1])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [3, 2, 1])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('sort', function () {
+    test('sort', assert => {
       const a = i.freeze([4, 1, 2, 3])
       const result = i.sort(a)
 
-      expect(result).to.eql([1, 2, 3, 4])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [1, 2, 3, 4])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('splice', function () {
+    test('splice', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.splice(a, 1, 1, 4)
 
-      expect(result).to.eql([1, 4, 3])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [1, 4, 3])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('splice (with object)', function () {
+    test('splice (with object)', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.splice(a, 1, 1, {b: 1}, {b: 2})
 
-      expect(result).to.eql([1, {b: 1}, {b: 2}, 3])
-      expect(Object.isFrozen(result)).to.be.ok()
-      expect(Object.isFrozen(result[1])).to.be.ok()
-      expect(Object.isFrozen(result[2])).to.be.ok()
+      assert.same(result, [1, {b: 1}, {b: 2}, 3])
+      assert.ok(Object.isFrozen(result))
+      assert.ok(Object.isFrozen(result[1]))
+      assert.ok(Object.isFrozen(result[2]))
     })
 
-    it('slice', function () {
+    test('slice', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.slice(a, 1, 2)
 
-      expect(result).to.eql([2])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [2])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('map', function () {
+    test('map', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.map(function (v) { return v * 2 }, a)
 
-      expect(result).to.eql([2, 4, 6])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [2, 4, 6])
+      assert.ok(Object.isFrozen(result))
     })
 
-    it('filter', function () {
+    test('filter', assert => {
       const a = i.freeze([1, 2, 3])
       const result = i.filter(function (v) { return v % 2 }, a)
 
-      expect(result).to.eql([1, 3])
-      expect(Object.isFrozen(result)).to.be.ok()
+      assert.same(result, [1, 3])
+      assert.ok(Object.isFrozen(result))
     })
   })
 
-  describe('assign', function () {
-    it('should work', function () {
+  test('assign', assert => {
+    test('should work', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       let result = i.assign(o, {'b': 3, 'c': 4})
-      expect(result).to.eql({a: 1, b: 3, c: 4})
-      expect(result).to.not.equal(o)
+      assert.same(result, {a: 1, b: 3, c: 4})
+      assert.notEqual(result, o)
       result = i.assign(o, {'d': 4})
-      expect(result).to.eql({a: 1, b: 2, c: 3, d: 4})
+      assert.same(result, {a: 1, b: 2, c: 3, d: 4})
     })
 
-    it('should work with multiple args', function () {
+    test('should work with multiple args', assert => {
       const o = i.freeze({a: 1, b: 2, c: 3})
       const result = i.assign(o, {'b': 3, 'c': 4}, {'d': 4})
-      expect(result).to.eql({a: 1, b: 3, c: 4, d: 4})
+      assert.same(result, {a: 1, b: 3, c: 4, d: 4})
     })
 
-    it('should keep references the same if nothing changes', function () {
+    test('should keep references the same if nothing changes', assert => {
       const o = i.freeze({a: 1})
       const result = i.assign(o, {a: 1})
-      expect(result).to.equal(o)
+      assert.equal(result, o)
     })
   })
 
-  describe('merge', function () {
-    it('should merge nested objects', function () {
+  test('merge', assert => {
+    test('should merge nested objects', assert => {
       const o1 = i.freeze({a: 1, b: {c: 1, d: 1}})
       const o2 = i.freeze({a: 1, b: {c: 2}, e: 2})
 
       const result = i.merge(o1, o2)
-      expect(result).to.eql({a: 1, b: {c: 2, d: 1}, e: 2})
+      assert.same(result, {a: 1, b: {c: 2, d: 1}, e: 2})
     })
 
-    it('should replace arrays', function () {
+    test('should replace arrays', assert => {
       const o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1})
       const o2 = i.freeze({a: 2, b: {c: [2]}})
 
       const result = i.merge(o1, o2)
-      expect(result).to.eql({a: 2, b: {c: [2]}, d: 1})
+      assert.same(result, {a: 2, b: {c: [2]}, d: 1})
     })
 
-    it('should overwrite with nulls', function () {
+    test('should overwrite with nulls', assert => {
       const o1 = i.freeze({a: 1, b: {c: [1, 1]}})
       const o2 = i.freeze({a: 2, b: {c: null}})
 
       const result = i.merge(o1, o2)
-      expect(result).to.eql({a: 2, b: {c: null}})
+      assert.same(result, {a: 2, b: {c: null}})
     })
 
-    it('should overwrite primitives with objects', function () {
+    test('should overwrite primitives with objects', assert => {
       const o1 = i.freeze({a: 1, b: 1})
       const o2 = i.freeze({a: 2, b: {c: 2}})
 
       const result = i.merge(o1, o2)
-      expect(result).to.eql({a: 2, b: {c: 2}})
+      assert.same(result, {a: 2, b: {c: 2}})
     })
 
-    it('should overwrite objects with primitives', function () {
+    test('should overwrite objects with primitives', assert => {
       const o1 = i.freeze({a: 1, b: {c: 2}})
       const o2 = i.freeze({a: 1, b: 2})
 
       const result = i.merge(o1, o2)
-      expect(result).to.eql({a: 1, b: 2})
+      assert.same(result, {a: 1, b: 2})
     })
 
-    it('should keep references the same if nothing changes', function () {
+    test('should keep references the same if nothing changes', assert => {
       const o1 = i.freeze({a: 1, b: {c: 1, d: 1, e: [1]}})
       const o2 = i.freeze({a: 1, b: {c: 1, d: 1, e: o1.b.e}})
       const result = i.merge(o1, o2)
-      expect(result).to.equal(o1)
-      expect(result.b).to.equal(o1.b)
+      assert.equal(result, o1)
+      assert.equal(result.b, o1.b)
     })
 
-    it('should handle undefined parameters', function () {
-      expect(i.merge({}, undefined)).to.eql({})
-      expect(i.merge(undefined, {})).to.eql(undefined)
+    test('should handle undefined parameters', assert => {
+      assert.same(i.merge({}, undefined), {})
+      assert.same(i.merge(undefined, {}), undefined)
     })
 
-    describe('custom associator', function () {
-      it('should use the custom associator', function () {
+    test('custom associator', assert => {
+      test('should use the custom associator', assert => {
         const o1 = i.freeze({a: 1, b: {c: [1, 1]}, d: 1})
         const o2 = i.freeze({a: 2, b: {c: [2]}})
 
@@ -467,30 +473,30 @@ describe('icepick', function () {
         }
 
         const result = i.merge(o1, o2, resolver)
-        expect(result).to.eql({a: 2, b: {c: [1, 1, 2]}, d: 1})
+        assert.same(result, {a: 2, b: {c: [1, 1, 2]}, d: 1})
       })
     })
   })
 })
 
-describe('chain', function () {
-  it('should wrap and unwrap a value', function () {
+test('chain', assert => {
+  test('should wrap and unwrap a value', assert => {
     const a = [1, 2, 3]
     const result = i.chain(a).value()
-    expect(result).to.eql(a)
+    assert.same(result, a)
   })
 
-  it('should work with a simple operation', function () {
+  test('should work with a simple operation', assert => {
     const a = [1, 2, 3]
     const result = i.chain(a)
       .assoc(1, 4)
       .value()
-    expect(result).to.eql([1, 4, 3])
-    expect(result).to.not.equal(a)
-    expect(Object.isFrozen(result)).to.be.ok()
+    assert.same(result, [1, 4, 3])
+    assert.notEqual(result, a)
+    assert.ok(Object.isFrozen(result))
   })
 
-  it('should work with multiple operations', function () {
+  test('should work with multiple operations', assert => {
     const a = [1, 2, 3]
     const result = i.chain(a)
       .assoc(1, 4)
@@ -498,12 +504,12 @@ describe('chain', function () {
       .pop()
       .push(5)
       .value()
-    expect(result).to.eql([3, 4, 5])
-    expect(result).to.not.equal(a)
-    expect(Object.isFrozen(result)).to.be.ok()
+    assert.same(result, [3, 4, 5])
+    assert.notEqual(result, a)
+    assert.ok(Object.isFrozen(result))
   })
 
-  it('should work with multiple operations (more complicated)', function () {
+  test('should work with multiple operations (more complicated)', assert => {
     const o = {
       a: [1, 2, 3],
       b: {c: 1},
@@ -515,16 +521,16 @@ describe('chain', function () {
       .assoc('e', 2)
       .dissoc('d')
       .value()
-    expect(result).to.eql({
+    assert.same(result, {
       a: [1, 2, 4],
       b: {c: 2, c2: 3},
       e: 2
     })
-    expect(result).to.not.equal(o)
-    expect(Object.isFrozen(result)).to.be.ok()
+    assert.notEqual(result, o)
+    assert.ok(Object.isFrozen(result))
   })
 
-  it('should have a thru method', function () {
+  test('should have a thru method', assert => {
     const o = [1, 2]
     const result = i.chain(o)
       .push(3)
@@ -532,76 +538,75 @@ describe('chain', function () {
         return [0].concat(val)
       })
       .value()
-    expect(Object.isFrozen(result)).to.be.ok()
-    expect(result).to.eql([0, 1, 2, 3])
+    assert.ok(Object.isFrozen(result))
+    assert.same(result, [0, 1, 2, 3])
   })
 })
 
-describe('production mode', function () {
+test('production mode', assert => {
   let oldEnv
-  let i
-  before(function () {
-    oldEnv = process.env.NODE_ENV
-    process.env.NODE_ENV = 'production'
-    delete require.cache[require.resolve('./icepick')]
-    i = require('./icepick')
-  })
+  oldEnv = process.env.NODE_ENV
+  process.env.NODE_ENV = 'production'
+  delete require.cache[require.resolve('./icepick')]
+  const i = require('./icepick')
 
-  after(function () {
+  assert.tearDown(function () {
     process.env.NODE_ENV = oldEnv
   })
 
-  it('should not freeze objects', function () {
+  test('should not freeze objects', assert => {
     const result = i.freeze({})
-    expect(Object.isFrozen(result)).to.be(false)
+    assert.equal(Object.isFrozen(result), false)
   })
 
-  it("should not freeze objects that are assoc'd", function () {
+  test("should not freeze objects that are assoc'd", assert => {
     const result = i.assoc({}, 'a', {})
-    expect(Object.isFrozen(result)).to.be(false)
-    expect(Object.isFrozen(result.a)).to.be(false)
+    assert.equal(Object.isFrozen(result), false)
+    assert.equal(Object.isFrozen(result.a), false)
   })
 
-  it('merge should keep references the same if nothing changes', function () {
+  test('merge should keep references the same if nothing changes', assert => {
     const o1 = i.freeze({a: 1, b: {c: 1, d: 1, e: [1]}})
     const o2 = i.freeze({a: 1, b: {c: 1, d: 1, e: o1.b.e}})
     const result = i.merge(o1, o2)
-    expect(result).to.equal(o1)
-    expect(result.b).to.equal(o1.b)
+    assert.equal(result, o1)
+    assert.equal(result.b, o1.b)
   })
 })
 
-describe('internals', function () {
-  describe('_weCareAbout', function () {
+test('internals', assert => {
+  test('_weCareAbout', assert => {
     function Foo () {}
+    class Bar {}
 
-    it('should care about objects', function () {
-      expect(i._weCareAbout({})).to.equal(true)
+    test('should care about objects', assert => {
+      assert.equal(i._weCareAbout({}), true)
     })
-    it('should care about arrays', function () {
-      expect(i._weCareAbout([])).to.equal(true)
+    test('should care about arrays', assert => {
+      assert.equal(i._weCareAbout([]), true)
     })
-    it('should not care about dates', function () {
-      expect(i._weCareAbout(new Date())).to.equal(false)
+    test('should not care about dates', assert => {
+      assert.equal(i._weCareAbout(new Date()), false)
     })
-    it('should not care about null', function () {
-      expect(i._weCareAbout(null)).to.equal(false)
+    test('should not care about null', assert => {
+      assert.equal(i._weCareAbout(null), false)
     })
-    it('should not care about undefined', function () {
-      expect(i._weCareAbout(undefined)).to.equal(false)
+    test('should not care about undefined', assert => {
+      assert.equal(i._weCareAbout(undefined), false)
     })
-    it('should not care about class instances', function () {
-      expect(i._weCareAbout(new Foo())).to.equal(false)
+    test('should not care about class instances', assert => {
+      assert.equal(i._weCareAbout(new Foo()), false)
     })
-    it('should not care about objects created with Object.create()',
-    function () {
-      expect(i._weCareAbout(Object.create(Foo.prototype))).to.equal(false)
+    test('should not care about class instances (2)', assert => {
+      assert.equal(i._weCareAbout(new Bar()), false)
     })
-    it('should not care about objects created with Object.create({})',
-    function () {
-      expect(i._weCareAbout(Object.create({
+    test('should not care about objects created with Object.create()', assert => {
+      assert.equal(i._weCareAbout(Object.create(Foo.prototype)), false)
+    })
+    test('should not care about objects created with Object.create({})', assert => {
+      assert.equal(i._weCareAbout(Object.create({
         foo: function () {}
-      }))).to.equal(false)
+      })), false)
     })
   })
 })

@@ -1,6 +1,8 @@
-# icepick [![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick) [![Coverage Status](https://coveralls.io/repos/aearly/icepick/badge.svg?branch=)](https://coveralls.io/r/aearly/icepick?branch=)
+# icepick
 
 Utilities for treating frozen JavaScript objects as persistent immutable collections.
+
+[![Build Status via Travis CI](https://travis-ci.org/aearly/icepick.svg?branch=master)](https://travis-ci.org/aearly/icepick) [![NPM version](http://img.shields.io/npm/v/icepick.svg)](https://www.npmjs.org/package/icepick) [![Coverage Status](https://coveralls.io/repos/aearly/icepick/badge.svg?branch=)](https://coveralls.io/r/aearly/icepick?branch=)
 
 ## Motivation
 
