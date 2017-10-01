@@ -1,3 +1,6 @@
+# v2.2.0
+- Compile `icepick.min.js` and `icepick.dev.js` down to ES5.
+
 # v2.1.1
 - Fix readme display on npmjs.org
 
