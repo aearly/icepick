@@ -10,16 +10,14 @@ default: ci
 lint: setup
 	standard
 
-dev:
-	mocha --watch icepick.test.js --growl
+dev: test
 
 watch: dev
 
 test: setup
-	mocha icepick.test.js
+	tap icepick.test.js -R spec --100
 
-coverage:
-	nyc mocha icepick.test.js
+coverage: test
 
 pre-commit: lint
 

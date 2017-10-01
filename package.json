@@ -4,8 +4,8 @@
   "description": "Utilities for treating frozen JavaScript objects as persistent immutable collections.",
   "main": "icepick.js",
   "scripts": {
-    "dist:prod": "browserify --standalone icepick icepick.js -g [ envify purge --NODE_ENV production ] | uglifyjs -mc > icepick.min.js",
-    "dist:dev": "browserify --standalone icepick icepick.js -g [ envify purge --NODE_ENV development ] | uglifyjs -mc > icepick.dev.js",
+    "dist:prod": "buble icepick.js | browserify - --standalone icepick -g [ envify purge --NODE_ENV production ] | uglifyjs -mc > icepick.min.js",
+    "dist:dev": "buble icepick.js | browserify - --standalone icepick -g [ envify purge --NODE_ENV development ] | uglifyjs -mc > icepick.dev.js",
     "preversion": "npm run dist:prod && npm run dist:dev",
     "pretest": "standard icepick.js icepick.test.js",
     "test": "tap icepick.test.js -R spec --100"
@@ -34,6 +34,7 @@
   "homepage": "https://github.com/aearly/icepick",
   "devDependencies": {
     "browserify": "^14.4.0",
+    "buble": "^0.16.0",
     "envify": "^4.1.0",
     "standard": "^10.0.2",
     "tap": "^10.7.0",
