@@ -1,3 +1,6 @@
+# v2.2.1
+- Make `map` and `filter` work properly with `chain`
+
 # v2.2.0
 - Compile `icepick.min.js` and `icepick.dev.js` down to ES5.
 
