@@ -322,9 +322,15 @@ const chainProto = {
 }
 
 Object.keys(exports).forEach((methodName) => {
+  if (methodName.match(/^(map|filter)$/)) {
+    chainProto[methodName] = function (fn) {
+      this.val = exports[methodName](fn, this.val)
+      return this
+    }
+    return
+  }
   chainProto[methodName] = function (...args) {
-    args.unshift(this.val)
-    this.val = exports[methodName].apply(null, args)
+    this.val = exports[methodName](this.val, ...args)
     return this
   }
 })

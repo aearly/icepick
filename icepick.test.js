@@ -541,6 +541,16 @@ test('chain', assert => {
     assert.ok(Object.isFrozen(result))
     assert.same(result, [0, 1, 2, 3])
   })
+
+  test('should work with map and filter', assert => {
+    const o = [1, 2, 3]
+    const result = i.chain(o)
+      .map(val => val * 2)
+      .filter(val => val > 2)
+      .value()
+    assert.ok(Object.isFrozen(result))
+    assert.same(result, [4, 6])
+  })
 })
 
 test('production mode', assert => {
