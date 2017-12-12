@@ -184,6 +184,27 @@ exports.assocIn = function assocIn (coll, path, value) {
 exports.setIn = exports.assocIn
 
 /**
+ * un-set a value on an object or array
+ * @param  {Object|Array}  coll
+ * @param  {Array} path  A list of keys to traverse
+ * @return {Object|Array}       New object or array
+ */
+exports.dissocIn = function dissocIn (coll, path) {
+  const key0 = path[0]
+  if (!coll.hasOwnProperty(key0)) {
+    return coll
+  }
+  if (path.length === 1) {
+    // TODO: document
+    return i.dissoc(coll, key0)
+  } else {
+    // TODO: document
+    return i.assoc(coll, key0, dissocIn(coll[key0], path.slice(1)))
+  }
+}
+exports.unsetIn = exports.dissocIn
+
+/**
  * get an object from a hierachy based on an array of keys
  * @param  {Object|Array} coll
  * @param  {Array}        path    list of keys
