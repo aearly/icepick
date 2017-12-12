@@ -195,10 +195,11 @@ exports.dissocIn = function dissocIn (coll, path) {
     return coll
   }
   if (path.length === 1) {
-    // TODO: document
+    // simplest case is a 1-element array.  Just a simple dissoc.
     return i.dissoc(coll, key0)
   } else {
-    // TODO: document
+    // break the problem down.  Assoc this object with the first key
+    // and the result of dissocIn with the rest of the keys
     return i.assoc(coll, key0, dissocIn(coll[key0], path.slice(1)))
   }
 }
