@@ -135,6 +135,23 @@ var newArr = icepick.dissoc(arr, 2); // ["a", , "c"]
 ```
 
 
+### dissocIn(collection, path)
+
+*alias: `unsetIn`*
+
+The opposite of `assocIn`.  Remove a value inside a hierarchical collection. `path` is an array of keys inside the object. Returns a partial copy of the original collection.
+
+```javascript
+var coll = {a: 1, b: {d: 5, e: 7}, c: 3};
+
+var newColl = icepick.dissocIn(coll, ["b", "d"]); // {a: 1, {b: {e: 7}}, c: 3}
+
+var arr = ["a", "b", "c"];
+
+var newArr = icepick.dissoc(arr, [2]); // ["a", , "c"]
+```
+
+
 ### assocIn(collection, path, value)
 
 *alias: `setIn`*
