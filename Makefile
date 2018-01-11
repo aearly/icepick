@@ -8,7 +8,7 @@ setup:
 default: ci
 
 lint: setup
-	standard
+	standard icepick.js icepick.test.js
 
 dev: test
 
