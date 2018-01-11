@@ -1,3 +1,6 @@
+# v2.3.0
+- Added `dissocIn`/`unsetIn`, the analog to `assocIn`/`setIne`
+
 # v2.2.1
 - Make `map` and `filter` work properly with `chain`
 
