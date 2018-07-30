@@ -1,3 +1,6 @@
+# v2.3.1
+- Add a LICENSE file
+
 # v2.3.0
 - Added `dissocIn`/`unsetIn`, the analog to `assocIn`/`setIne`
 
