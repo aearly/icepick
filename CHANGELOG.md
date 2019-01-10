@@ -1,3 +1,6 @@
+# v2.4.0
+- Compatible with both ES5 and ES6 environments
+
 # v2.3.1
 - Add a LICENSE file
 
