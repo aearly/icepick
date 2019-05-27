@@ -129,6 +129,15 @@ test('icepick', assert => {
       assert.equal(result, o)
     })
 
+    test('should work with Object.create(null)', assert => {
+      const o = Object.create(null)
+      o.b = 2
+      const result = i.assoc(o, 'a', 1)
+      assert.same(result, {a: 1, b: 2})
+      assert.equal(result.constructor, undefined)
+      assert.equal(Object.getPrototypeOf(result), null)
+    })
+
     test('should be aliased as set', assert => {
       assert.equal(i.set, i.assoc)
     })
@@ -664,6 +673,9 @@ test('internals', assert => {
       assert.equal(i._weCareAbout(Object.create({
         foo: function () {}
       })), false)
+    })
+    test('should care about objects with null prototypes', assert => {
+      assert.equal(i._weCareAbout(Object.create(null)), true)
     })
   })
 })

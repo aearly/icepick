@@ -24,8 +24,10 @@ const weCareAbout = val => val !== null &&
       isObjectLike(val))
 
 const isObjectLike = val => typeof val === 'object' &&
-    val.constructor === Object &&
-    Object.getPrototypeOf(val) === Object.prototype
+    (val.constructor === Object ||
+      val.constructor == null) &&
+    (Object.getPrototypeOf(val) === Object.prototype ||
+      Object.getPrototypeOf(val) === null)
 
 const forKeys = (obj, iter) => {
   let idx, keys
@@ -44,7 +46,7 @@ const forKeys = (obj, iter) => {
 }
 
 const cloneObj = obj => {
-  const newObj = {}
+  const newObj = obj.constructor == null ? Object.create(null) : {}
   const keys = Object.keys(obj)
   let idx = keys.length
   let key
