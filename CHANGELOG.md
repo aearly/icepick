@@ -1,3 +1,6 @@
+# v2.4.0
+- Handle objects with `null` prototypes
+
 # v2.3.1
 - Add a LICENSE file
 
