@@ -7,7 +7,7 @@
     "dist:prod": "buble icepick.js | browserify - --standalone icepick -g [ envify purge --NODE_ENV production ] | uglifyjs -mc > icepick.min.js",
     "dist:dev": "buble icepick.js | browserify - --standalone icepick -g [ envify purge --NODE_ENV development ] | uglifyjs -mc > icepick.dev.js",
     "preversion": "npm run dist:prod && npm run dist:dev",
-    "pretest": "standard icepick.js icepick.test.js",
+    "pretest": "eslint icepick.ts icepick.test.ts",
     "test": "tap icepick.test.js -R spec --100"
   },
   "repository": {
@@ -49,12 +49,11 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.2.1",
-    "tap": "^10.7.0",
+    "tap": "^15.0.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "uglify-es": "^3.0.25"
   },
-  "dependencies": {},
   "prettier": {
     "semi": false,
     "trailingComma": "es5",

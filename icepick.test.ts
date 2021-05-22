@@ -1,5 +1,7 @@
-const i = require('./icepick')
+//import tap from 'tap'
+//import i from './icepick'
 const tap = require('tap')
+const i = require('./icepick')
 
 function test(what, how) {
   tap.test(what, (assert) => {
@@ -32,7 +34,8 @@ test('icepick', () => {
     })
 
     test('should not work with cyclical objects', (assert) => {
-      let a = {}
+      // eslint-disable-next-line
+      let a: any = {}
       a.a = a
 
       assert.throws(() => i.freeze(a))

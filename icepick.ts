@@ -14,6 +14,7 @@
 type IObject = Record<string, unknown>
 type IArray = unknown[]
 type Collection = IObject | IArray
+type IKey = string | number
 const identity = <T>(coll: T): T => coll
 
 // we only care about objects or arrays for now
@@ -26,13 +27,16 @@ const weCareAbout = (val: unknown): val is Collection =>
     // which are often circular.
     isObjectLike(val))
 
-const isObjectLike = (val): val is IObject =>
+const isObjectLike = (val: unknown): val is IObject =>
   typeof val === 'object' &&
   (val.constructor === Object || val.constructor == null) &&
   (Object.getPrototypeOf(val) === Object.prototype ||
     Object.getPrototypeOf(val) === null)
 
-function forKeys(obj: Collection, iter: (key: string | number) => void): void {
+function forKeys<C extends Collection>(
+  obj: C,
+  iter: (key: IKey) => void
+): void {
   if (Array.isArray(obj)) {
     let idx = obj.length
     while (idx--) {
@@ -51,7 +55,7 @@ const cloneObj = (obj: IObject): IObject => {
   const newObj = obj.constructor == null ? Object.create(null) : {}
   const keys = Object.keys(obj)
   let idx = keys.length
-  let key
+  let key: string
   while (idx--) {
     key = keys[idx]
     newObj[key] = obj[key]
@@ -123,12 +127,12 @@ export const freeze =
 export function thaw<C extends Collection>(coll: C): C {
   if (!weCareAbout(coll) || !Object.isFrozen(coll)) return coll
 
-  const newColl = Array.isArray(coll) ? new Array(coll.length) : {}
+  const newColl = (Array.isArray(coll) ? new Array(coll.length) : {}) as C
 
   forKeys(coll, (key) => {
     newColl[key] = thaw(coll[key])
   })
-  return newColl as C
+  return newColl
 }
 
 /**
@@ -138,7 +142,11 @@ export function thaw<C extends Collection>(coll: C): C {
  * @param  {Object}        value
  * @return {Object|Array}        new object hierarchy with modifications
  */
-export function assoc(coll, key, value) {
+export function assoc<C extends Collection>(
+  coll: C,
+  key: IKey,
+  value: unknown
+): Readonly<C> {
   if (coll[key] === value) {
     return _freeze(coll)
   }
@@ -157,7 +165,7 @@ export const set = assoc
  * @param  {String|Number} key  Key or Index
  * @return {Object|Array}       New object or array
  */
-export function dissoc(coll, key) {
+export function dissoc<C extends Collection>(coll: C, key: IKey): Readonly<C> {
   const newObj = clone(coll)
 
   delete newObj[key]
@@ -173,7 +181,11 @@ export const unset = dissoc
  * @param  {Object}       value
  * @return {Object|Array}       new object hierarchy with modifications
  */
-export function assocIn(coll, path, value) {
+export function assocIn<C extends Collection>(
+  coll: C,
+  path: IKey[],
+  value: unknown
+): Readonly<C> {
   const key0 = path[0]
   if (path.length === 1) {
     // simplest case is a 1-element array.  Just a simple assoc.
@@ -192,7 +204,10 @@ export const setIn = assocIn
  * @param  {Array} path  A list of keys to traverse
  * @return {Object|Array}       New object or array
  */
-export function dissocIn(coll: Collection, path) {
+export function dissocIn<C extends Collection>(
+  coll: C,
+  path: IKey[]
+): Readonly<C> {
   const key0 = path[0]
   // eslint-disable-next-line
   if (!coll.hasOwnProperty(key0)) {
@@ -215,7 +230,10 @@ export const unsetIn = dissocIn
  * @param  {Array}        path    list of keys
  * @return {Object}       value, or undefined
  */
-export function getIn(coll, path) {
+export function getIn<C extends Collection>(
+  coll: C,
+  path: IKey[]
+): Readonly<C> {
   return (path || []).reduce((curr, key) => {
     if (!curr) {
       return
@@ -232,66 +250,105 @@ export function getIn(coll, path) {
  *                             Return the new value to set
  * @return {Object|Array}      new object hierarchy with modifications
  */
-export function updateIn(coll, path, callback) {
+export function updateIn<C extends Collection>(
+  coll: C,
+  path: IKey[],
+  callback: (val: unknown) => unknown
+): Readonly<C> {
   const existingVal = getIn(coll, path)
   return assocIn(coll, path, callback(existingVal))
 }
 
+type MutativeArrayMethods =
+  | 'push'
+  | 'unshift'
+  | 'pop'
+  | 'shift'
+  | 'reverse'
+  | 'sort'
+
 // generate wrappers for the mutative array methods
-;['push', 'unshift', 'pop', 'shift', 'reverse', 'sort'].forEach(
-  (methodName) => {
-    exports[methodName] = function (arr, val) {
-      const newArr = [...arr]
+const makeArrayMethod = (methodName: MutativeArrayMethods) => {
+  const fn = function (arr: IArray, val: unknown): Readonly<IArray> {
+    const newArr = [...arr]
 
-      newArr[methodName](freezeIfNeeded(val))
+    newArr[methodName](freezeIfNeeded(val) as any)
 
-      return _freeze(newArr)
-    }
-
-    exports[methodName].displayName = 'icepick.' + methodName
+    return _freeze(newArr)
   }
-)
+
+  fn.displayName = 'icepick.' + methodName
+  return fn
+}
+
+export const push = makeArrayMethod('push')
+export const unshift = makeArrayMethod('unshift')
+export const pop = makeArrayMethod('pop')
+export const shift = makeArrayMethod('shift')
+export const reverse = makeArrayMethod('reverse')
+export const sort = makeArrayMethod('sort')
 
 // splice is special because it is variadic
-export function splice(arr, start, ..._args) {
+export function splice(
+  arr: IArray,
+  start: number,
+  deleteCount?: number,
+  ..._args: unknown[]
+): Readonly<IArray> {
   const newArr = [...arr]
   const args = _args.map(freezeIfNeeded)
 
-  newArr.splice(start, ...args)
+  newArr.splice(start, deleteCount, ...args)
 
   return _freeze(newArr)
 }
 
 // slice is non-mutative
-export function slice(arr, arg1, arg2) {
+export function slice(
+  arr: IArray,
+  arg1?: number,
+  arg2?: number
+): Readonly<IArray> {
   const newArr = arr.slice(arg1, arg2)
 
   return _freeze(newArr)
 }
-;['map', 'filter'].forEach((methodName) => {
-  exports[methodName] = function (fn, arr) {
-    const newArr = arr[methodName](fn)
 
-    return _freeze(newArr)
-  }
+export function map(
+  fn: (val: unknown, idx?: number, arr?: IArray) => unknown,
+  arr: IArray
+): Readonly<IArray> {
+  const newArr = arr.map(fn)
 
-  exports[methodName].displayName = 'icepick.' + methodName
-})
+  return _freeze(newArr)
+}
+export function filter(
+  fn: (val: unknown, idx?: number, arr?: IArray) => boolean,
+  arr: IArray
+): Readonly<IArray> {
+  const newArr = arr.filter(fn)
 
-export function assign(obj, ...objs) {
+  return _freeze(newArr)
+}
+
+export function assign(obj: IObject, ...objs: IObject[]): Readonly<IObject> {
   const newObj = objs.reduce(singleAssign, obj)
 
   return _freeze(newObj)
 }
 
-function singleAssign(obj1, obj2) {
+function singleAssign(obj1: IObject, obj2: IObject): Readonly<IObject> {
   return Object.keys(obj2).reduce((obj, key) => {
     return assoc(obj, key, obj2[key])
   }, obj1)
 }
 export const extend = assign
 
-export function merge(target, source, resolver) {
+export function merge(
+  target: IObject,
+  source: IObject,
+  resolver?: (targetVal: unknown, sourceVal: unknown, key: string) => unknown
+): Readonly<IObject> {
   if (target == null || source == null) {
     return target
   }
@@ -319,7 +376,7 @@ export function merge(target, source, resolver) {
       return assocIfDifferent(
         obj,
         key,
-        merge(targetVal, resolvedSourceVal, resolver)
+        merge(targetVal as IObject, resolvedSourceVal as IObject, resolver)
       )
     }
 
@@ -328,7 +385,11 @@ export function merge(target, source, resolver) {
   }, target)
 }
 
-function assocIfDifferent(target, key, value) {
+function assocIfDifferent(
+  target: IObject,
+  key: string,
+  value: unknown
+): Readonly<IObject> {
   if (target[key] === value) {
     return target
   }
@@ -336,10 +397,10 @@ function assocIfDifferent(target, key, value) {
 }
 
 const chainProto = {
-  value: function value() {
+  value: function value(): Readonly<Collection> {
     return this.val
   },
-  thru: function thru(fn) {
+  thru: function thru<C>(fn: (val: C) => C) {
     this.val = freezeIfNeeded(fn(this.val))
     return this
   },
@@ -360,27 +421,37 @@ const icepick = {
   getIn,
   splice,
   slice,
+  push,
+  unshift,
+  pop,
+  shift,
+  reverse,
+  sort,
+  map,
+  filter,
   assign,
   extend,
   merge,
   chain,
 }
 
+type ArrayIteratee = Parameters<typeof map>['0']
+
 Object.keys(icepick).forEach((methodName) => {
   if (methodName.match(/^(map|filter)$/)) {
-    chainProto[methodName] = function (fn) {
-      this.val = exports[methodName](fn, this.val)
+    chainProto[methodName] = function (fn: ArrayIteratee) {
+      this.val = icepick[methodName](fn, this.val)
       return this
     }
     return
   }
-  chainProto[methodName] = function (...args) {
-    this.val = exports[methodName](this.val, ...args)
+  chainProto[methodName] = function (...args: unknown[]) {
+    this.val = icepick[methodName](this.val, ...args)
     return this
   }
 })
 
-export function chain(val) {
+export function chain(val: Collection) {
   const wrapped = Object.create(chainProto)
   wrapped.val = val
   return wrapped

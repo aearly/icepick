@@ -6,3 +6,4 @@ const a = {
 }
 
 setIn(a, ['b', 1, 'c'], 4)
+setIn(a, ['b', 'asdef', 'c'], 4)
